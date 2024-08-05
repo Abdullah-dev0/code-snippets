@@ -1,11 +1,11 @@
 import { hash, verify } from "@node-rs/argon2";
 import { Request, Response } from "express";
-import { generateIdFromEntropySize } from "lucia";
 import { lucia } from "../config/luciaAuth.js";
 import { prisma } from "../config/prismaClient.js";
 import { SignupData } from "../utils/dataValidation.js";
 
 export const signUp = async (req: Request, res: Response) => {
+
 	const signupData = SignupData.safeParse(req.body);
 
 	if (!signupData.success) {
@@ -35,19 +35,17 @@ export const signUp = async (req: Request, res: Response) => {
 		console.log(error.message);
 	}
 
-	const userId = generateIdFromEntropySize(10); // 16 characters long
-
 	try {
 		const user = await prisma.user.create({
 			data: {
-				id: userId,
 				username: signupData.data.username,
+				email: signupData.data.email,
 				password: passwordHash,
 			},
 		});
 
 		if (user) {
-			const session = await lucia.createSession(userId, {});
+			const session = await lucia.createSession(user.id, {});
 			return res
 				.status(201)
 				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
@@ -94,6 +92,7 @@ export const login = async (req: Request, res: Response) => {
 	}
 
 	const session = await lucia.createSession(existingUser.id, {});
+
 	res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).json({
 		message: "Logged in successfully",
 		userData: {
@@ -108,10 +107,9 @@ export const logout = async (req: Request, res: Response) => {
 		return res.status(401).json({ error: "You must be logged in to logout" }).end();
 	}
 
-
 	await lucia.invalidateSession(res.locals.session.id);
 
-	return res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize());
+	res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize()).end();
 };
 
 export const add = async (req: Request, res: Response) => {
@@ -130,7 +128,6 @@ export const add = async (req: Request, res: Response) => {
 
 	await prisma.post.create({
 		data: {
-			id: generateIdFromEntropySize(10),
 			userId: res.locals!.user!.id,
 			message: post,
 		},

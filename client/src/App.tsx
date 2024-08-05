@@ -4,6 +4,7 @@ import { useState } from "react";
 const App = () => {
 	const [formData, setFormData] = useState({
 		username: "",
+		email: "",
 		password: "",
 	});
 
@@ -18,6 +19,7 @@ const App = () => {
 
 		axios
 			.post("/api/auth/signup", {
+				email: formData.email,
 				username: formData.username,
 				password: formData.password,
 			})
@@ -43,41 +45,29 @@ const App = () => {
 	};
 
 	const logoutHandler = async () => {
+		console.log("logout");
 		const res = await axios.get("/api/auth/logout");
 		console.log(res);
 	};
 	return (
-		<div className="">
-			<div>
-				<form onSubmit={onSubmit}>
-					<input type="text" name="username" onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+		<div>
+			<form onSubmit={onSubmit}>
+				<input type="text" name="username" onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+				<input type="email" name="email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
 
-					<input type="text" name="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-					<button type="submit">signup</button>
-				</form>
-			</div>
+				<input type="text" name="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+				<button type="submit">signup</button>
+			</form>
 
-			<div>
-				<form onSubmit={loginHandler}>
-					<input
-						type="text"
-						name="username"
-						onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
-					/>
+			<form onSubmit={loginHandler}>
+				<input type="text" name="username" onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} />
 
-					<input
-						type="text"
-						name="password"
-						onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-					/>
-					<button type="submit">Login</button>
-				</form>
-			</div>
+				<input type="text" name="password" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
+				<button type="submit">Login</button>
+			</form>
 
-			<div>
-				<button onClick={add}>Add</button>
-				<button onClick={logoutHandler}>logout</button>
-			</div>
+			<button onClick={add}>Add</button>
+			<button onClick={logoutHandler}>logout</button>
 		</div>
 	);
 };
