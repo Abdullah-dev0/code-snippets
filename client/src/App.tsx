@@ -2,7 +2,6 @@ import axios from "axios";
 import { useState } from "react";
 
 const App = () => {
-	const [data, setData] = useState<any>(null);
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
@@ -33,7 +32,6 @@ const App = () => {
 			password: loginData.password,
 		});
 		console.log(res);
-		setData(res.data.data.login);
 	};
 
 	const add = async () => {
