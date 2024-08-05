@@ -22,7 +22,7 @@ const App = () => {
 				username: formData.username,
 				password: formData.password,
 			})
-			.then((res) => console.log(res));
+			.then((res) => console.log(res.data));
 	};
 
 	const loginHandler = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,26 +46,40 @@ const App = () => {
 
 	const logoutHandler = async () => {
 		const res = await axios.get("/api/auth/logout");
-		console.log(res.data);
+		console.log(res);
 	};
 	return (
-		<div>
-			<form onSubmit={onSubmit}>
-				<input type="text" name="username" onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
+		<div className="">
+			<div>
+				<form onSubmit={onSubmit}>
+					<input type="text" name="username" onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
 
-				<input type="text" name="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-				<button type="submit">signup</button>
-			</form>
+					<input type="text" name="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+					<button type="submit">signup</button>
+				</form>
+			</div>
 
-			<form onSubmit={loginHandler}>
-				<input type="text" name="username" onChange={(e) => setLoginData({ ...loginData, username: e.target.value })} />
+			<div>
+				<form onSubmit={loginHandler}>
+					<input
+						type="text"
+						name="username"
+						onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+					/>
 
-				<input type="text" name="password" onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
-				<button type="submit">Login</button>
-			</form>
+					<input
+						type="text"
+						name="password"
+						onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+					/>
+					<button type="submit">Login</button>
+				</form>
+			</div>
 
-			<button onClick={add}>Add</button>
-			<button onClick={logoutHandler}>logout</button>
+			<div>
+				<button onClick={add}>Add</button>
+				<button onClick={logoutHandler}>logout</button>
+			</div>
 		</div>
 	);
 };

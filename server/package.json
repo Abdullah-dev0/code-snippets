@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "nodemon",
-    "dev": "tsx watch src/index.ts"
+    "dev": " tsc -b && tsx watch src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +23,8 @@
     "lucia": "^3.2.0",
     "morgan": "^1.10.0",
     "ts-loader": "^9.5.1",
-    "tsx": "^4.16.5"
+    "tsx": "^4.16.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",

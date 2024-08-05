@@ -3,16 +3,16 @@ import { Request, Response } from "express";
 import { generateIdFromEntropySize } from "lucia";
 import { lucia } from "../config/luciaAuth.js";
 import { prisma } from "../config/prismaClient.js";
+import { SignupData } from "../utils/dataValidation.js";
 
 export const signUp = async (req: Request, res: Response) => {
-	const username: string = req.body.username;
-	const password: string = req.body.password;
+	const signupData = SignupData.safeParse(req.body);
 
-	if (!username || !password) {
-		return res.status(400).json({ error: "Invalid username or password" });
+	if (!signupData.success) {
+		return res.status(400).json({ error: signupData.error });
 	}
 
-	const passwordHash = await hash(password ?? "", {
+	const passwordHash = await hash(signupData.data.password, {
 		// recommended minimum parameters
 		memoryCost: 19456,
 		timeCost: 2,
@@ -24,7 +24,7 @@ export const signUp = async (req: Request, res: Response) => {
 	try {
 		const existingUser = await prisma.user.findFirst({
 			where: {
-				username: username!,
+				username: signupData.data.username,
 			},
 		});
 
@@ -41,7 +41,7 @@ export const signUp = async (req: Request, res: Response) => {
 		const user = await prisma.user.create({
 			data: {
 				id: userId,
-				username: username!,
+				username: signupData.data.username,
 				password: passwordHash,
 			},
 		});
@@ -54,11 +54,8 @@ export const signUp = async (req: Request, res: Response) => {
 				.json({
 					message: "User created successfully",
 					userData: {
-						// Include user data you want to return
 						id: user.id,
 						username: user.username,
-
-						// add any other fields you need
 					},
 				});
 		}
@@ -97,15 +94,23 @@ export const login = async (req: Request, res: Response) => {
 	}
 
 	const session = await lucia.createSession(existingUser.id, {});
-	res
-		.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+	res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).json({
+		message: "Logged in successfully",
+		userData: {
+			id: existingUser.id,
+			username: existingUser.username,
+		},
+	});
 };
 
 export const logout = async (req: Request, res: Response) => {
 	if (!res.locals.session) {
-		return res.status(401).end();
+		return res.status(401).json({ error: "You must be logged in to logout" }).end();
 	}
+
+
 	await lucia.invalidateSession(res.locals.session.id);
+
 	return res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize());
 };
 
