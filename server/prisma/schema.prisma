@@ -14,12 +14,13 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(cuid())
-  username String    @unique
-  email    String    @unique
-  password String
-  sessions Session[]
-  posts    Post[]
+  id        String    @id @default(cuid())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  github_id Int?      @unique
+  sessions  Session[]
+  posts     Post[]
 }
 
 model Session {

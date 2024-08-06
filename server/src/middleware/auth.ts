@@ -17,6 +17,7 @@ export function originVerificationMiddleware(req: Request, res: Response, next: 
 
 export async function sessionManagementMiddleware(req: Request, res: Response, next: NextFunction) {
 	const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
+
 	if (!sessionId) {
 		res.locals.user = null;
 		res.locals.session = null;
@@ -38,6 +39,8 @@ export async function sessionManagementMiddleware(req: Request, res: Response, n
 	res.locals.session = session;
 	next();
 }
+
+// Middleware to validate session
 
 declare global {
 	namespace Express {

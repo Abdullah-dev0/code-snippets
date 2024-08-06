@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const App = () => {
 	const [formData, setFormData] = useState({
@@ -66,8 +67,17 @@ const App = () => {
 				<button type="submit">Login</button>
 			</form>
 
-			<button onClick={add}>Add</button>
-			<button onClick={logoutHandler}>logout</button>
+			<div className="flex gap-5 text-white">
+				<button onClick={add}>Add</button>
+				<button onClick={logoutHandler}>logout</button>
+
+				<button
+					onClick={() => {
+						window.location.href = "/login/github";
+					}}>
+					Github
+				</button>
+			</div>
 		</div>
 	);
 };

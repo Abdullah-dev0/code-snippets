@@ -3,7 +3,9 @@ import core from "cors";
 import express from "express";
 import morgan from "morgan";
 import { userRouter } from "./routes/user.route.js";
-import { originVerificationMiddleware, sessionManagementMiddleware } from "./middleware/auth.js";
+import { authRouter } from "./routes/auth.route.js";
+import { githubRouter } from "./routes/github.route.js";
+import { originVerificationMiddleware } from "./middleware/auth.js";
 
 export const app = express();
 
@@ -30,4 +32,6 @@ app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
+app.use("/api/auth", authRouter);
+app.use("/login", githubRouter);
 app.use("/api", userRouter);
