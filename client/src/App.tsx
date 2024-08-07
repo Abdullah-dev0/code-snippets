@@ -77,6 +77,13 @@ const App = () => {
 					}}>
 					Github
 				</button>
+
+				<button
+					onClick={() => {
+						window.location.href = "/login/google";
+					}}>
+					Google
+				</button>
 			</div>
 		</div>
 	);

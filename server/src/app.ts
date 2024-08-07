@@ -5,7 +5,9 @@ import morgan from "morgan";
 import { userRouter } from "./routes/user.route.js";
 import { authRouter } from "./routes/auth.route.js";
 import { githubRouter } from "./routes/github.route.js";
+import { googleRouter } from "./routes/google.route.js";
 import { originVerificationMiddleware } from "./middleware/auth.js";
+import { callabackGoogleRouter } from "./routes/callbackGoogle.js";
 
 export const app = express();
 
@@ -34,4 +36,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/login", githubRouter);
+app.use("/api/login/google", callabackGoogleRouter);
+app.use("/login", googleRouter);
 app.use("/api", userRouter);
