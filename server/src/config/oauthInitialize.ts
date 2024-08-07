@@ -1,3 +1,5 @@
+//Initialize the OAuth providers see the docs for more info https://arctic.js.org/
+
 import { GitHub } from "arctic";
 import { Google } from "arctic";
 import dotenv from "dotenv";
@@ -17,5 +19,8 @@ export const github = new GitHub(process.env.GITHUB_CLIENT_ID, process.env.GITHU
 export const googleAuth = new Google(
 	process.env.GOOGLE_CLIENT_ID,
 	process.env.GOOGLE_CLIENT_SECRET,
-	"http://localhost:5173/api/login/google/callback",
+
+	//please change this to your own callback url
+
+	`http://localhost:5173/api/login/google/callback`,
 );

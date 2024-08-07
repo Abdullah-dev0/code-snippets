@@ -3,6 +3,8 @@ import type { Session, User } from "lucia";
 import { verifyRequestOrigin } from "lucia";
 import { lucia } from "../config/luciaAuth.js";
 
+// Middleware to verify the origin of the request and prevent CSRF attacks eg. POST requests from other domains.
+
 export function originVerificationMiddleware(req: Request, res: Response, next: NextFunction) {
 	if (req.method === "GET") {
 		return next();
@@ -14,6 +16,9 @@ export function originVerificationMiddleware(req: Request, res: Response, next: 
 	}
 	next();
 }
+
+
+// Middleware to manage sessions and cookies
 
 export async function sessionManagementMiddleware(req: Request, res: Response, next: NextFunction) {
 	const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");

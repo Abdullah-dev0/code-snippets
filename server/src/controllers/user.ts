@@ -1,3 +1,5 @@
+// just for testing puposes feel free to delete this file
+
 import { Request, Response } from "express";
 import { prisma } from "../config/prismaClient.js";
 

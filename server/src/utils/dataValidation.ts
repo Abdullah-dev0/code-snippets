@@ -1,3 +1,5 @@
+// This file contains the data validation schema for the signup and login data. It uses the zod library to define the schema and types for the data. The SignupData and LoginData types are exported from this file and used in the signup and login routes to validate the incoming data.
+
 import z from "zod";
 
 export const SignupData = z.object({

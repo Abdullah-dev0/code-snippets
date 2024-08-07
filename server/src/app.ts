@@ -1,3 +1,5 @@
+//This file is the entry point for the server. It sets up the express app, middleware, and routes.
+
 import cookieParser from "cookie-parser";
 import core from "cors";
 import express from "express";
@@ -21,11 +23,6 @@ app.use(morgan("dev"));
 
 app.use(cookieParser());
 
-//every week
-cron.schedule("0 0 * * 0", async () => {
-	console.log("Running cron job to clean cookies");
-	await lucia.deleteExpiredSessions();
-});
 
 const corsOptions = {
 	origin: "http://localhost:5173", // Replace with your production domain
@@ -36,11 +33,26 @@ const corsOptions = {
 
 app.use(core(corsOptions));
 
+
+
+// Cron job to clean expired sessions every Sunday at midnight.
+cron.schedule("0 0 * * 0", async () => {
+	console.log("Running cron job to clean cookies");
+	await lucia.deleteExpiredSessions();
+});
+
+
 app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
 app.use("/api/auth", authRouter);
+
+
 app.use("/login", githubRouter);
+
+
 app.use("/api", googleRouter);
+
+
 app.use("/api", userRouter);

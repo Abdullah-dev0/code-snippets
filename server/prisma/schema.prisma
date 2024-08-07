@@ -14,6 +14,8 @@ datasource db {
   // directUrl = env("DATABASE_URL")
 }
 
+// Define your own datamodels here and run `npx prisma generate dev` to create
+
 model User {
   id            String    @id @default(cuid())
   username      String
@@ -49,5 +51,5 @@ model Post {
   userId  String
   message String
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

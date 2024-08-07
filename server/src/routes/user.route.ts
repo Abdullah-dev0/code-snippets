@@ -1,3 +1,5 @@
+// purpose of this file is to define the routes for the user entity
+
 import express from "express";
 
 import { add } from "../controllers/user.js";

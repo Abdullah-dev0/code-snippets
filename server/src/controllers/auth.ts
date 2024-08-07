@@ -1,22 +1,31 @@
+// All the funcitons related to authentication are here login, signup, logout, github login, github callback, google login, google callback
+
 import { hash, verify } from "@node-rs/argon2";
 import { generateCodeVerifier, generateState, OAuth2RequestError } from "arctic";
 import { Request, Response } from "express";
 import { parseCookies, serializeCookie } from "oslo/cookie";
-import { github, googleAuth } from "../config/oauthInitialize.js";
+import { github, googleAuth } from "../config/oAuthInitialize.js";
 import { lucia } from "../config/luciaAuth.js";
 import { prisma } from "../config/prismaClient.js";
 import { LoginData, SignupData } from "../utils/dataValidation.js";
 import { User } from "@prisma/client";
 
 export const signUp = async (req: Request, res: Response) => {
+	if (res.locals.session) {
+		return res.status(400).json({ error: "You are already logged in" });
+	}
+
+	//form validation using zod
+
 	const signupData = SignupData.safeParse(req.body);
 
 	if (!signupData.success) {
 		return res.status(400).json({ error: signupData.error });
 	}
 
+	//password hashing
+
 	const passwordHash = await hash(signupData.data.password, {
-		// recommended minimum parameters
 		memoryCost: 19456,
 		timeCost: 2,
 		outputLen: 32,
@@ -44,8 +53,11 @@ export const signUp = async (req: Request, res: Response) => {
 				username: signupData.data.username,
 				email: signupData.data.email,
 				password: passwordHash,
+				emailVerified: false,
 			},
 		});
+
+		// if the user is created successfully, create a session and send the session cookie
 
 		if (user) {
 			const session = await lucia.createSession(user.id, {});
@@ -68,6 +80,10 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
+	if (res.locals.session) {
+		return res.status(400).json({ error: "You are already logged in" });
+	}
+
 	const loginData = LoginData.safeParse(req.body);
 
 	if (!loginData.success) {
@@ -107,6 +123,10 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const githubLogin = async (req: Request, res: Response) => {
+	if (res.locals.session) {
+		return res.status(200).json({ error: "You must be logged in to logout" }).end();
+	}
+
 	const state = generateState();
 	const url = await github.createAuthorizationURL(state, {
 		scopes: ["user:email"],
@@ -158,8 +178,6 @@ export const githubCallback = async (req: Request, res: Response) => {
 			},
 		});
 
-
-
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
@@ -171,6 +189,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 				username: githubUser.login,
 				email: githubUser.email,
 				avatar: githubUser.avatar_url,
+				emailVerified: true,
 				Account: {
 					create: {
 						providerAccountId: githubUser.id.toString(),
@@ -194,6 +213,10 @@ export const githubCallback = async (req: Request, res: Response) => {
 };
 
 export const googleLogin = async (req: Request, res: Response) => {
+	if (res.locals.session) {
+		return res.status(200).json({ error: "You must be logged out to login" }).end;
+	}
+
 	const state = generateState();
 	const codeVerifier = generateCodeVerifier();
 	const url = await googleAuth.createAuthorizationURL(state, codeVerifier, {
@@ -298,7 +321,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	if (!res.locals.session) {
-		return res.status(401).json({ error: "You must be logged in to logout" }).end();
+		return res.status(401).json({ error: "already Logout" }).end();
 	}
 
 	await lucia.invalidateSession(res.locals.session.id);
