@@ -158,7 +158,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 			},
 		});
 
-		console.log("existingUser", existingUser);
+
 
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
@@ -261,7 +261,6 @@ export const googleCallback = async (req: Request, res: Response) => {
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 
-			
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
 			return;
 		}

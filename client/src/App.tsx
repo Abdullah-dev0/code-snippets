@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 const App = () => {
 	const [formData, setFormData] = useState({
@@ -80,7 +79,7 @@ const App = () => {
 
 				<button
 					onClick={() => {
-						window.location.href = "/login/google";
+						window.location.href = "/api/login/google";
 					}}>
 					Google
 				</button>

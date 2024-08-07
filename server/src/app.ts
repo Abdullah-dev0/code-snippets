@@ -2,12 +2,12 @@ import cookieParser from "cookie-parser";
 import core from "cors";
 import express from "express";
 import morgan from "morgan";
-import { userRouter } from "./routes/user.route.js";
 import { authRouter } from "./routes/auth.route.js";
 import { githubRouter } from "./routes/github.route.js";
 import { googleRouter } from "./routes/google.route.js";
-import { originVerificationMiddleware } from "./middleware/auth.js";
-import { callabackGoogleRouter } from "./routes/callbackGoogle.js";
+import { userRouter } from "./routes/user.route.js";
+import { lucia } from "./config/luciaAuth.js";
+import cron from "node-cron";
 
 export const app = express();
 
@@ -20,6 +20,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.use(cookieParser());
+
+//every week
+cron.schedule("0 0 * * 0", async () => {
+	console.log("Running cron job to clean cookies");
+	await lucia.deleteExpiredSessions();
+});
 
 const corsOptions = {
 	origin: "http://localhost:5173", // Replace with your production domain
@@ -36,6 +42,5 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/login", githubRouter);
-app.use("/api/login/google", callabackGoogleRouter);
-app.use("/login", googleRouter);
+app.use("/api", googleRouter);
 app.use("/api", userRouter);

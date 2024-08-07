@@ -5,6 +5,7 @@ import { prisma } from "../config/prismaClient.js";
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
 export const lucia = new Lucia(adapter, {
+	sessionExpiresIn: new TimeSpan(2, "s"),
 	sessionCookie: {
 		attributes: {
 			secure: process.env.NODE_ENV === "production",
