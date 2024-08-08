@@ -17,16 +17,17 @@ datasource db {
 // Define your own datamodels here and run `npx prisma generate dev` to create
 
 model User {
-  id            String    @id @default(cuid())
-  username      String
-  password      String?
-  email         String?   @unique
-  emailVerified Boolean?
-  avatar        String?
-  createdAt     DateTime  @default(now())
-  sessions      Session[]
-  Post          Post[]
-  Account       Account[]
+  id                    String                 @id @default(cuid())
+  username              String
+  password              String?
+  email                 String?                @unique
+  emailVerified         Boolean?
+  avatar                String?
+  createdAt             DateTime               @default(now())
+  sessions              Session[]
+  Post                  Post[]
+  Account               Account[]
+  emailVerificationCode emailVerificationCode?
 }
 
 model Account {
@@ -37,6 +38,16 @@ model Account {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model emailVerificationCode {
+  id         String   @id @default(cuid())
+  code       String
+  user_id    String   @unique
+  email      String
+  expires_at DateTime
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Session {

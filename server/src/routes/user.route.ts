@@ -2,9 +2,13 @@
 
 import express from "express";
 
-import { add } from "../controllers/user.js";
+import { add, emailVerification, getCurrentUser } from "../controllers/user.js";
 import { sessionManagementMiddleware } from "../middleware/auth.js";
 
 export const userRouter = express.Router();
 
-userRouter.post("/add", sessionManagementMiddleware, add);
+userRouter.use(sessionManagementMiddleware);
+
+userRouter.post("/add", add);
+userRouter.get("/getCurrentUser", getCurrentUser);
+userRouter.post("/email-verification", emailVerification);

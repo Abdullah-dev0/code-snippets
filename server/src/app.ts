@@ -23,7 +23,6 @@ app.use(morgan("dev"));
 
 app.use(cookieParser());
 
-
 const corsOptions = {
 	origin: "http://localhost:5173", // Replace with your production domain
 	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
@@ -33,14 +32,11 @@ const corsOptions = {
 
 app.use(core(corsOptions));
 
-
-
 // Cron job to clean expired sessions every Sunday at midnight.
-cron.schedule("0 0 * * 0", async () => {
+cron.schedule("0 2 * * *", async () => {
 	console.log("Running cron job to clean cookies");
 	await lucia.deleteExpiredSessions();
 });
-
 
 app.get("/", (req, res) => {
 	res.send("Hello, world!");
@@ -48,11 +44,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRouter);
 
-
 app.use("/login", githubRouter);
 
-
 app.use("/api", googleRouter);
-
 
 app.use("/api", userRouter);

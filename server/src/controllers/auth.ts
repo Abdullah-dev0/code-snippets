@@ -9,6 +9,8 @@ import { lucia } from "../config/luciaAuth.js";
 import { prisma } from "../config/prismaClient.js";
 import { LoginData, SignupData } from "../utils/dataValidation.js";
 import { User } from "@prisma/client";
+import { sendVerificationCode } from "../utils/sendVerificationCode.js";
+import { generateEmailVerificationCode } from "../utils/generateVerificationCode.js";
 
 export const signUp = async (req: Request, res: Response) => {
 	if (res.locals.session) {
@@ -61,18 +63,19 @@ export const signUp = async (req: Request, res: Response) => {
 
 		user.password = undefined as any;
 
+		const verificationCode = await generateEmailVerificationCode(user.id, user.email!);
+
+		await sendVerificationCode(user.email!, verificationCode, "email");
+
 		if (user) {
 			const session = await lucia.createSession(user.id, {});
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-			return res.status(200).json({
-				message: "User created successfully",
-				userData: user,
-			});
+			return res.status(200).redirect("/email-verification");
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });
 	} catch (error: any) {
-		console.error(error.message);
+		console.error(error);
 	}
 };
 
@@ -130,6 +133,7 @@ export const githubLogin = async (req: Request, res: Response) => {
 	const url = await github.createAuthorizationURL(state, {
 		scopes: ["user:email"],
 	});
+
 	res
 		.status(302)
 		.appendHeader(
@@ -151,13 +155,12 @@ export const githubCallback = async (req: Request, res: Response) => {
 	const storedState = parseCookies(req.headers.cookie ?? "").get("github_oauth_state") ?? null;
 
 	if (!code || !state || !storedState || state !== storedState) {
-		res
+		return res
 			.status(400)
 			.json({
 				error: "Invalid request",
 			})
 			.end();
-		return;
 	}
 
 	try {
@@ -175,18 +178,6 @@ export const githubCallback = async (req: Request, res: Response) => {
 			where: {
 				providerAccountId: githubUser.id.toString(),
 			},
-			select: {
-				user: {
-					select: {
-						username: true,
-						email: true,
-						avatar: true,
-						emailVerified: true,
-					},
-				},
-				userId: true,
-				provider: true,
-			},
 		});
 
 		if (existingUser) {
@@ -194,13 +185,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
-			return res
-				.status(200)
-				.json({
-					message: "Logged in successfully",
-					userData: existingUser.user,
-				})
-				.redirect("/");
+			return res.status(200).redirect("/");
 		}
 
 		const user = await prisma.user.create({
@@ -218,18 +203,10 @@ export const githubCallback = async (req: Request, res: Response) => {
 			},
 		});
 
-		user.password = undefined as any;
-
 		const session = await lucia.createSession(user.id, {});
 		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
-		return res
-			.status(200)
-			.json({
-				message: "Logged in successfully",
-				userData: user,
-			})
-			.redirect("/");
+		return res.status(200).redirect("/");
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
@@ -286,13 +263,12 @@ export const googleCallback = async (req: Request, res: Response) => {
 	const codeVerifier = parseCookies(req.headers.cookie ?? "").get("google_code_verifier") ?? null;
 
 	if (!code || !state || !storedState || state !== storedState || !codeVerifier) {
-		res
+		return res
 			.status(400)
 			.json({
 				error: "Invalid request",
 			})
 			.end();
-		return;
 	}
 
 	try {
@@ -310,18 +286,6 @@ export const googleCallback = async (req: Request, res: Response) => {
 			where: {
 				providerAccountId: googleUser.sub,
 			},
-			select: {
-				user: {
-					select: {
-						username: true,
-						email: true,
-						avatar: true,
-						emailVerified: true,
-					},
-				},
-				userId: true,
-				provider: true,
-			},
 		});
 
 		if (existingUser) {
@@ -329,13 +293,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
-			return res
-				.status(200)
-				.json({
-					message: "Logged in successfully",
-					userData: existingUser.user,
-				})
-				.redirect("/");
+			return res.status(200).redirect("/");
 		}
 
 		const user = await prisma.user.create({
@@ -374,7 +332,7 @@ export const logout = async (req: Request, res: Response) => {
 
 	await lucia.invalidateSession(res.locals.session.id);
 
-	res
+	return res
 		.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize())
 		.json({
 			message: "Logged out successfully",
