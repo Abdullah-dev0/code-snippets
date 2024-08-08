@@ -59,18 +59,15 @@ export const signUp = async (req: Request, res: Response) => {
 
 		// if the user is created successfully, create a session and send the session cookie
 
+		user.password = undefined as any;
+
 		if (user) {
 			const session = await lucia.createSession(user.id, {});
-			return res
-				.status(201)
-				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
-				.json({
-					message: "User created successfully",
-					userData: {
-						id: user.id,
-						username: user.username,
-					},
-				});
+			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+			return res.status(200).json({
+				message: "User created successfully",
+				userData: user,
+			});
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });
@@ -90,7 +87,7 @@ export const login = async (req: Request, res: Response) => {
 		return res.status(400).json({ error: loginData.error });
 	}
 
-	const existingUser = await prisma.user.findFirst({
+	const existingUser: User | null = await prisma.user.findFirst({
 		where: {
 			username: loginData.data.username,
 		},
@@ -113,14 +110,16 @@ export const login = async (req: Request, res: Response) => {
 
 	const session = await lucia.createSession(existingUser.id, {});
 
-	res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).json({
+	existingUser.password = undefined as any;
+
+	res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+	return res.status(200).json({
 		message: "Logged in successfully",
-		userData: {
-			id: existingUser.id,
-			username: existingUser.username,
-		},
+		userData: existingUser,
 	});
 };
+
+// todo : don't sent post , Get  resqust to this route just redirect to the url ie. window.location.href = login/google and then the google callback will be called
 
 export const githubLogin = async (req: Request, res: Response) => {
 	if (res.locals.session) {
@@ -176,12 +175,32 @@ export const githubCallback = async (req: Request, res: Response) => {
 			where: {
 				providerAccountId: githubUser.id.toString(),
 			},
+			select: {
+				user: {
+					select: {
+						username: true,
+						email: true,
+						avatar: true,
+						emailVerified: true,
+					},
+				},
+				userId: true,
+				provider: true,
+			},
 		});
 
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
-			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
-			return;
+
+			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+
+			return res
+				.status(200)
+				.json({
+					message: "Logged in successfully",
+					userData: existingUser.user,
+				})
+				.redirect("/");
 		}
 
 		const user = await prisma.user.create({
@@ -199,8 +218,18 @@ export const githubCallback = async (req: Request, res: Response) => {
 			},
 		});
 
+		user.password = undefined as any;
+
 		const session = await lucia.createSession(user.id, {});
-		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
+		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+
+		return res
+			.status(200)
+			.json({
+				message: "Logged in successfully",
+				userData: user,
+			})
+			.redirect("/");
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
@@ -211,6 +240,8 @@ export const githubCallback = async (req: Request, res: Response) => {
 		res.status(500).end();
 	}
 };
+
+// todo :  don't sent post , Get  resqust to this route just redirect to the url ie. window.location.href = login.google and then the google callback will be called
 
 export const googleLogin = async (req: Request, res: Response) => {
 	if (res.locals.session) {
@@ -279,16 +310,33 @@ export const googleCallback = async (req: Request, res: Response) => {
 			where: {
 				providerAccountId: googleUser.sub,
 			},
+			select: {
+				user: {
+					select: {
+						username: true,
+						email: true,
+						avatar: true,
+						emailVerified: true,
+					},
+				},
+				userId: true,
+				provider: true,
+			},
 		});
 
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 
-			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
-			return;
-		}
+			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
-		console.log(googleUser);
+			return res
+				.status(200)
+				.json({
+					message: "Logged in successfully",
+					userData: existingUser.user,
+				})
+				.redirect("/");
+		}
 
 		const user = await prisma.user.create({
 			data: {
@@ -326,7 +374,12 @@ export const logout = async (req: Request, res: Response) => {
 
 	await lucia.invalidateSession(res.locals.session.id);
 
-	res.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize()).end();
+	res
+		.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize())
+		.json({
+			message: "Logged out successfully",
+		})
+		.end();
 };
 
 interface Github {
