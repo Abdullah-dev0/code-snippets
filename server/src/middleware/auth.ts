@@ -30,6 +30,8 @@ export async function sessionManagementMiddleware(req: Request, res: Response, n
 
 	const { session, user } = await lucia.validateSession(sessionId);
 
+	// not realyy needed  because you will do this on frontend feel free to delete if causing some erors
+
 	if (user?.emailVerified === false) {
 		return res.redirect("/email-verification");
 	}
