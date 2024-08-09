@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+<<<<<<< HEAD
   // directUrl = env("DATABASE_URL")
 }
 
@@ -63,4 +64,31 @@ model Post {
   message String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+=======
+}
+
+model User {
+  id       String    @id
+  username String    @unique
+  email    String    @unique
+  password String
+  sessions Session[]
+  Post     Post[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model Post {
+  id      String @id
+  userId  String
+  message String
+
+  user User @relation(fields: [userId], references: [id])
+>>>>>>> 5c57b39619eb191d1007649ccc1b1116164a066e
 }

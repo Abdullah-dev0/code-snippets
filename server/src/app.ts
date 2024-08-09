@@ -1,14 +1,22 @@
+<<<<<<< HEAD
 //This file is the entry point for the server. It sets up the express app, middleware, and routes.
 
+=======
+>>>>>>> 5c57b39619eb191d1007649ccc1b1116164a066e
 import cookieParser from "cookie-parser";
 import core from "cors";
 import express from "express";
 import morgan from "morgan";
+<<<<<<< HEAD
 import { authRouter } from "./routes/auth/auth.route.js";
 import { githubRouter } from "./routes/auth/github.route.js";
 import { googleRouter } from "./routes/auth/google.route.js";
 import { userRouter } from "./routes/user.route.js";
 import { cleanExpiredSessionJob, cleanExpiredTokensJob } from "./utils/job/index.js";
+=======
+import { userRouter } from "./routes/user.route.js";
+import { originVerificationMiddleware, sessionManagementMiddleware } from "./middleware/auth.js";
+>>>>>>> 5c57b39619eb191d1007649ccc1b1116164a066e
 
 export const app = express();
 
@@ -22,9 +30,12 @@ app.use(morgan("dev"));
 
 app.use(cookieParser());
 
+<<<<<<< HEAD
 cleanExpiredSessionJob();
 cleanExpiredTokensJob();
 
+=======
+>>>>>>> 5c57b39619eb191d1007649ccc1b1116164a066e
 const corsOptions = {
 	origin: "http://localhost:5173", // Replace with your production domain
 	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
@@ -38,10 +49,13 @@ app.get("/", (req, res) => {
 	res.send("Hello, world!");
 });
 
+<<<<<<< HEAD
 app.use("/api/auth", authRouter);
 
 app.use("/login", githubRouter);
 
 app.use("/api", googleRouter);
 
+=======
+>>>>>>> 5c57b39619eb191d1007649ccc1b1116164a066e
 app.use("/api", userRouter);
