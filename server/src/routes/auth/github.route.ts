@@ -8,6 +8,5 @@ export const githubRouter = express.Router();
 //this is middleware that will be executed before the route handler
 githubRouter.use(sessionManagementMiddleware);
 
-
 githubRouter.get("/github", githubLogin);
 githubRouter.get("/github/callback", githubCallback);
