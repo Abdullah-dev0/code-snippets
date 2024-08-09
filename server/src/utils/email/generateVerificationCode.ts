@@ -1,6 +1,6 @@
 import { TimeSpan, createDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
-import { prisma } from "../config/prismaClient.js";
+import { prisma } from "../../config/prismaClient.js";
 
 export async function generateEmailVerificationCode(userId: string, email: string): Promise<string> {
 	// delete any existing codes

@@ -4,12 +4,11 @@ import cookieParser from "cookie-parser";
 import core from "cors";
 import express from "express";
 import morgan from "morgan";
-import { authRouter } from "./routes/auth.route.js";
-import { githubRouter } from "./routes/github.route.js";
-import { googleRouter } from "./routes/google.route.js";
+import { authRouter } from "./routes/auth/auth.route.js";
+import { githubRouter } from "./routes/auth/github.route.js";
+import { googleRouter } from "./routes/auth/google.route.js";
 import { userRouter } from "./routes/user.route.js";
-import { lucia } from "./config/luciaAuth.js";
-import cron from "node-cron";
+import { cleanExpiredSessionJob, cleanExpiredTokensJob } from "./utils/job/index.js";
 
 export const app = express();
 
@@ -23,6 +22,9 @@ app.use(morgan("dev"));
 
 app.use(cookieParser());
 
+cleanExpiredSessionJob();
+cleanExpiredTokensJob();
+
 const corsOptions = {
 	origin: "http://localhost:5173", // Replace with your production domain
 	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
@@ -31,12 +33,6 @@ const corsOptions = {
 };
 
 app.use(core(corsOptions));
-
-// Cron job to clean expired sessions every Sunday at midnight.
-cron.schedule("0 2 * * *", async () => {
-	console.log("Running cron job to clean cookies");
-	await lucia.deleteExpiredSessions();
-});
 
 app.get("/", (req, res) => {
 	res.send("Hello, world!");

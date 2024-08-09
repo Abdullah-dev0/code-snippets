@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prismaClient.js";
 import { emailVerificationCode, User } from "@prisma/client";
 import { lucia } from "../config/luciaAuth.js";
-import { verifyVerificationCode } from "../utils/verifyVerificationCode.js";
+import { verifyVerificationCode } from "../utils/email/verifyVerificationCode.js";
 
 export const add = async (req: Request, res: Response) => {
 	if (!res.locals.session) {

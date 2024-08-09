@@ -9,8 +9,8 @@ import { lucia } from "../config/luciaAuth.js";
 import { prisma } from "../config/prismaClient.js";
 import { LoginData, SignupData } from "../utils/dataValidation.js";
 import { User } from "@prisma/client";
-import { sendVerificationCode } from "../utils/sendVerificationCode.js";
-import { generateEmailVerificationCode } from "../utils/generateVerificationCode.js";
+import { sendVerificationCode } from "../utils/email/sendVerificationCode.js";
+import { generateEmailVerificationCode } from "../utils/email/generateVerificationCode.js";
 
 export const signUp = async (req: Request, res: Response) => {
 	if (res.locals.session) {
