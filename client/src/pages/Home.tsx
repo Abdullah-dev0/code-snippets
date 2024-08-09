@@ -1,9 +1,11 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCurrentUser } from "../Hooks/useCurrentUser";
 
 const HomePage = () => {
 	const Navigate = useNavigate();
+
 	const [formData, setFormData] = useState({
 		username: "",
 		email: "",
@@ -54,6 +56,7 @@ const HomePage = () => {
 		const res = await axios.get("/api/auth/logout");
 		console.log(res);
 	};
+
 	return (
 		<div>
 			<form onSubmit={onSubmit}>

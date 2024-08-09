@@ -2,7 +2,7 @@
 
 import { Request, Response } from "express";
 import { prisma } from "../config/prismaClient.js";
-import { User } from "@prisma/client";
+import { emailVerificationCode, User } from "@prisma/client";
 import { lucia } from "../config/luciaAuth.js";
 import { verifyVerificationCode } from "../utils/verifyVerificationCode.js";
 
@@ -32,8 +32,9 @@ export const add = async (req: Request, res: Response) => {
 
 export const getCurrentUser = async (req: Request, res: Response) => {
 	if (!res.locals.session) {
-		return res.status(401).json({ error: "Please Login to get data" });
+		return res.status(200).json({ error: "You must be logged in" }).end();
 	}
+
 
 	const { id } = res.locals.user!;
 
@@ -53,40 +54,38 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 export const emailVerification = async (req: Request, res: Response) => {
-	const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
-
-	if (!sessionId) {
-		return res.status(401).json({ error: "You must be logged in to verify your email" });
+	if (res.locals.session || res.locals.user?.emailVerified) {
+		return res.redirect("/");
 	}
 
-	const { user } = await lucia.validateSession(sessionId);
+	const code: string = req.body.code;
 
-	if (!user) {
-		return res.status(401).json({ error: "You must be logged in to verify your email" });
+	if (!req.body.code) {
+		return res.status(400).json({ error: "Code is required" });
 	}
 
-	const code = req.body.code;
-
-	if (typeof code !== "string") {
-		return res.status(400).json({ error: "Invalid code type" });
-	}
+	const user: emailVerificationCode | null = await prisma.emailVerificationCode.findFirst({
+		where: {
+			code: code,
+		},
+	});
 
 	const validCode = await verifyVerificationCode(user, code);
+
 	if (!validCode) {
-		return res.status(400).json({ error: "Invalid code" });
+		return res.status(400).json({ error: "Invalid code or wrong code" });
 	}
 
-	await lucia.invalidateUserSessions(user.id);
 	await prisma.user.update({
 		where: {
-			id: user.id,
+			id: user?.user_id,
 		},
 		data: {
 			emailVerified: true,
 		},
 	});
 
-	const session = await lucia.createSession(user.id, {});
-	const sessionCookie = lucia.createSessionCookie(session.id);
-	return res.status(200).json({ message: "Email verified" }).appendHeader("Set-Cookie", sessionCookie.serialize());
+	const session = await lucia.createSession(user?.user_id!, {});
+	res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+	return res.redirect("/");
 };

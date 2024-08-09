@@ -17,12 +17,11 @@ export function originVerificationMiddleware(req: Request, res: Response, next: 
 	next();
 }
 
-
 // Middleware to manage sessions and cookies
 
 export async function sessionManagementMiddleware(req: Request, res: Response, next: NextFunction) {
 	const sessionId = lucia.readSessionCookie(req.headers.cookie ?? "");
-
+	console.log(sessionId, "session id");
 	if (!sessionId) {
 		res.locals.user = null;
 		res.locals.session = null;
@@ -30,6 +29,10 @@ export async function sessionManagementMiddleware(req: Request, res: Response, n
 	}
 
 	const { session, user } = await lucia.validateSession(sessionId);
+
+	if (user?.emailVerified === false) {
+		res.redirect("/email-verification");
+	}
 
 	if (session && session.fresh) {
 		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());

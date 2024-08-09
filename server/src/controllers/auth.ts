@@ -68,9 +68,7 @@ export const signUp = async (req: Request, res: Response) => {
 		await sendVerificationCode(user.email!, verificationCode, "email");
 
 		if (user) {
-			const session = await lucia.createSession(user.id, {});
-			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-			return res.status(200).redirect("/email-verification");
+			res.redirect("/email-verification");
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });

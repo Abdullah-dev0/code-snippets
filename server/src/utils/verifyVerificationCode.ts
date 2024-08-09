@@ -1,11 +1,11 @@
+import { emailVerificationCode } from "@prisma/client";
 import { isWithinExpirationDate } from "oslo";
-import type { User } from "lucia";
 import { prisma } from "../config/prismaClient.js";
 
-export async function verifyVerificationCode(user: User, code: string): Promise<boolean> {
+export async function verifyVerificationCode(user: emailVerificationCode | null, code: string): Promise<boolean> {
 	const databaseCode = await prisma.emailVerificationCode.findFirst({
 		where: {
-			user_id: user.id,
+			user_id: user?.user_id,
 		},
 	});
 
@@ -17,15 +17,20 @@ export async function verifyVerificationCode(user: User, code: string): Promise<
 		return false;
 	}
 
-	if (databaseCode.email !== user.email) {
+	if (databaseCode.email !== user!.email) {
+		console.log("email is incorrect");
 		return false;
 	}
 
-	await prisma.emailVerificationCode.delete({
-		where: {
-			id: databaseCode.id,
-		},
-	});
+	try {
+		await prisma.emailVerificationCode.delete({
+			where: {
+				id: databaseCode.id,
+			},
+		});
+	} catch (error: any) {
+		console.log(error.message);
+	}
 
 	return true;
 }

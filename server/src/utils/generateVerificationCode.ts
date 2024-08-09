@@ -15,9 +15,9 @@ export async function generateEmailVerificationCode(userId: string, email: strin
 	}
 
 	// generate a new code
-	const code = generateRandomString(8, alphabet("0-9"));
+	const code = generateRandomString(4, alphabet("0-9"));
 
-	const expires_at = createDate(new TimeSpan(2, "m"));
+	const expires_at = createDate(new TimeSpan(3, "m"));
 
 	const newCode = await prisma.emailVerificationCode.create({
 		data: {
