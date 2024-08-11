@@ -7,6 +7,7 @@ import { SignupSchema } from "../../lib/formSchema/FormSchema";
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 export function SignupForm() {
 	const Navigate = useNavigate();
@@ -21,15 +22,30 @@ export function SignupForm() {
 	});
 
 	async function onSubmit(values: z.infer<typeof SignupSchema>) {
-		const response = await axios.post("/api/auth/signup", values);
-
-		if (response.status === 200) {
-			Navigate("/email-verification");
+		try {
+			const response = await axios.post("/api/auth/signup", values);
+			console.log(response);
+			if (response.status === 200 && response.statusText == "OK") {
+				toast.success("Sign up successful. Please check your email for verification.");
+				Navigate("/Otp-verification");
+			} else {
+				// Handle unexpected successful response
+				toast.error("Something went wrong. Please try again.");
+			}
+		} catch (error: unknown) {
+			if (axios.isAxiosError(error)) {
+				toast.error("An error occurred while signing up. Please try again.");
+				if (error.response?.status === 409) {
+					// Handle username or email conflict
+					toast.error(error.response.data.error);
+				} else {
+					// Handle other server-side errors
+					toast.error("These was an error on the server. Please try again.");
+				}
+			} else {
+				toast.error("An error occurred while signing up. Please try again.");
+			}
 		}
-
-		
-
-		
 	}
 
 	return (

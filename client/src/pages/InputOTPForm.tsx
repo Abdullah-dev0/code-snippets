@@ -25,13 +25,23 @@ export function InputOTPForm() {
 	});
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		const response = await axios.post("/api/email-verification", data);
+		try {
+			const response = await axios.post("/api/email-verification", data);
 
-		if (response.status === 200) {
-			toast.success("Email Verified Successfully");
-			Navigate("/dashboard");
-		} else {
-			toast.error("Invalid Code");
+			console.log(response);
+			if (response.status === 200) {
+				toast.success(response.data.message || "Email Verified Successfully");
+				Navigate("/dashboard");
+			} else {
+				toast.error(response.data.error);
+			}
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				// Display the specific error message from the server
+				toast.error(error.response?.data.error || "An error occurred while verifying the email. Please try again.");
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
 		}
 	}
 

@@ -54,38 +54,50 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 };
 
 export const emailVerification = async (req: Request, res: Response) => {
-	if (res.locals.session || res.locals.user?.emailVerified) {
-		return res.status(200).json({ message: "Email already verified" });
+	try {
+		// Check if the email is already verified
+		if (res.locals.session || res.locals.user?.emailVerified) {
+			return res.status(200).json({ message: "Email already verified" });
+		}
+
+		// Extract and validate the verification code from the request body
+		const code: string = req.body.pin;
+		if (!code) {
+			return res.status(400).json({ error: "Code is required" });
+		}
+
+		// Find the verification code in the database
+		const user: emailVerificationCode | null = await prisma.emailVerificationCode.findFirst({
+			where: {
+				code: code,
+			},
+		});
+
+		// Check if the code is valid
+		const validCode = await verifyVerificationCode(user, code);
+		if (!validCode) {
+			return res.status(400).json({ error: "The verification code you entered is incorrect" });
+		}
+
+		// Update user's email verification status
+		await prisma.user.update({
+			where: {
+				id: user?.user_id,
+			},
+			data: {
+				emailVerified: true,
+			},
+		});
+
+		// Create a new session and set the session cookie
+		const session = await lucia.createSession(user?.user_id!, {});
+		res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+
+		// Respond with success
+		return res.status(200).json({ message: "Email verified successfully" });
+	} catch (error) {
+		console.error("Error during email verification:", error);
+		// Handle unexpected errors
+		return res.status(500).json({ error: "An unexpected error occurred. Please try again." });
 	}
-
-	const code: string = req.body.code;
-
-	if (!req.body.code) {
-		return res.status(400).json({ error: "Code is required" });
-	}
-
-	const user: emailVerificationCode | null = await prisma.emailVerificationCode.findFirst({
-		where: {
-			code: code,
-		},
-	});
-
-	const validCode = await verifyVerificationCode(user, code);
-
-	if (!validCode) {
-		return res.status(400).json({ error: "Invalid code or wrong code" });
-	}
-
-	await prisma.user.update({
-		where: {
-			id: user?.user_id,
-		},
-		data: {
-			emailVerified: true,
-		},
-	});
-
-	const session = await lucia.createSession(user?.user_id!, {});
-	res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-	return res.status(200).redirect("/dashboard");
 };

@@ -38,12 +38,19 @@ export const signUp = async (req: Request, res: Response) => {
 	try {
 		const existingUser = await prisma.user.findFirst({
 			where: {
-				email: signupData.data.email,
+				OR: [
+					{
+						username: signupData.data.username,
+					},
+					{
+						email: signupData.data.email,
+					}
+				]
 			},
 		});
 
 		if (existingUser) {
-			return res.status(400).json({ error: "Username already used" });
+			return res.status(409).json({ error: "Username or email already Taken" });
 		}
 	} catch (error: any) {
 		console.log(error.message);
