@@ -33,7 +33,7 @@ export const add = async (req: Request, res: Response) => {
 export const getCurrentUser = async (req: Request, res: Response) => {
 	// Check if user is logged in for secuery reasons you will do in frontend anyway
 	if (!res.locals.session) {
-		return res.status(200).json({ error: "You must be logged in" }).end();
+		return res.status(401).json({ error: "You must be logged in" }).end();
 	}
 
 	const { id } = res.locals.user!;
@@ -55,7 +55,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
 export const emailVerification = async (req: Request, res: Response) => {
 	if (res.locals.session || res.locals.user?.emailVerified) {
-		return res.redirect("/");
+		return res.status(200).redirect("/");
 	}
 
 	const code: string = req.body.code;

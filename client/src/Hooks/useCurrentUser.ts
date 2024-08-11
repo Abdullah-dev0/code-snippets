@@ -1,24 +1,28 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useCurrentUser = () => {
-	const [user, setUser] = useState<any>("");
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-
-	useEffect(() => {
-		const getCurrentUser = async () => {
+	const { isLoading, isError, data, error } = useQuery({
+		queryKey: ["currentUser"],
+		queryFn: async () => {
 			try {
-				const res = await axios.get("/api/getCurrentUser");
-				setUser(res.data);
-			} catch (err: any) {
-				setError(err);
-			} finally {
-				setLoading(false);
+				const response = await axios.get("/api/getCurrentUser");
+				return response.data; // Return the data here
+			} catch (error: any) {
+				console.log(error);
+				throw error; // Rethrow the error so React Query can handle it
 			}
-		};
-		getCurrentUser();
-	}, []);
+		},
+		staleTime: 1000 * 60 * 10, // Data will be considered fresh for 10 minutes
+		refetchOnMount: false, // Disable refetch on mount
+		refetchInterval: false, // Disable regular interval refetch
+		retry: 1, // Number of retries on failure
+		retryDelay: 5000, // Delay between retries
+	});
 
-	return { user, loading, error };
+	if (isLoading) {
+		console.log("Loading...");
+	}
+
+	return { isLoading, isError, data, error };
 };

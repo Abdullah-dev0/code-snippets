@@ -44,3 +44,7 @@ app.use("/login", githubRouter);
 app.use("/api", googleRouter);
 
 app.use("/api", userRouter);
+
+app.use("*", (req, res) => {
+	res.status(404).json({ error: "Not found" });
+});

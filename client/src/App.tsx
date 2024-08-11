@@ -12,6 +12,8 @@ export const App = () => {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/email-verification" element={<EmailVerification />} />
 					<Route path="/Dashboard" element={<Dashboard />} />
+					<Route path="*" element={<div>404</div>} />
+				
 				</Routes>
 			</Layout>
 		</Router>

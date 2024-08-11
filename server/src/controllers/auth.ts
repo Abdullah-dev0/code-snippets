@@ -68,7 +68,9 @@ export const signUp = async (req: Request, res: Response) => {
 		await sendVerificationCode(user.email!, verificationCode, "email");
 
 		if (user) {
-			res.redirect("/email-verification");
+			return res.status(200).json({
+				message: "User created successfully",
+			});
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });
@@ -116,7 +118,6 @@ export const login = async (req: Request, res: Response) => {
 	res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 	return res.status(200).json({
 		message: "Logged in successfully",
-		userData: existingUser,
 	});
 };
 
@@ -332,6 +333,7 @@ export const logout = async (req: Request, res: Response) => {
 
 	return res
 		.setHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize())
+		.status(200)
 		.json({
 			message: "Logged out successfully",
 		})
