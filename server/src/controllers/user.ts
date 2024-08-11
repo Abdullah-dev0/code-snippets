@@ -55,7 +55,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
 export const emailVerification = async (req: Request, res: Response) => {
 	if (res.locals.session || res.locals.user?.emailVerified) {
-		return res.status(200).redirect("/");
+		return res.status(200).json({ message: "Email already verified" });
 	}
 
 	const code: string = req.body.code;
@@ -87,5 +87,5 @@ export const emailVerification = async (req: Request, res: Response) => {
 
 	const session = await lucia.createSession(user?.user_id!, {});
 	res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-	return res.redirect("/");
+	return res.status(200).redirect("/dashboard");
 };

@@ -38,7 +38,7 @@ export const signUp = async (req: Request, res: Response) => {
 	try {
 		const existingUser = await prisma.user.findFirst({
 			where: {
-				username: signupData.data.username,
+				email: signupData.data.email,
 			},
 		});
 
