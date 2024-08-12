@@ -1,13 +1,14 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { z } from "zod";
 
 const FormSchema = z.object({
 	pin: z.string().min(4, {
@@ -17,6 +18,7 @@ const FormSchema = z.object({
 
 export function InputOTPForm() {
 	const Navigate = useNavigate();
+
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
@@ -24,33 +26,33 @@ export function InputOTPForm() {
 		},
 	});
 
-	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		try {
-			const response = await axios.post("/api/email-verification", data);
-
-			console.log(response);
-			if (response.status === 200) {
-				toast.success(response.data.message || "Email Verified Successfully");
-				Navigate("/dashboard");
-			} else {
-				toast.error(response.data.error);
-			}
-		} catch (error) {
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (values: z.infer<typeof FormSchema>) => {
+			const response = await axios.post("/api/email-verification", values);
+			return response.data;
+		},
+		onError: (error: any) => {
 			if (axios.isAxiosError(error)) {
-				// Display the specific error message from the server
-				toast.error(error.response?.data.error || "An error occurred while verifying the email. Please try again.");
+				if (error.response) {
+					toast.error(error.response.data.error);
+				}
 			} else {
 				toast.error("An unexpected error occurred. Please try again.");
 			}
-		}
-	}
+		},
+		onSuccess: () => {
+			toast.success("Email Verified Successfully");
+			Navigate("/dashboard");
+		},
+	});
 
 	return (
 		<div className="flex items-center justify-center h-screen w-full">
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-center">
+				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-6 text-center">
 					<FormField
 						control={form.control}
+						disabled={isPending}
 						name="pin"
 						render={({ field }) => (
 							<FormItem>
@@ -72,8 +74,8 @@ export function InputOTPForm() {
 						)}
 					/>
 
-					<Button type="submit" className="w-full">
-						Submit
+					<Button type="submit" className="w-full" disabled={isPending}>
+						{isPending ? "Verifying..." : "Verify"}
 					</Button>
 				</form>
 			</Form>

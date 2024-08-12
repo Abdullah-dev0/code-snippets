@@ -44,8 +44,8 @@ export const signUp = async (req: Request, res: Response) => {
 					},
 					{
 						email: signupData.data.email,
-					}
-				]
+					},
+				],
 			},
 		});
 
@@ -75,7 +75,7 @@ export const signUp = async (req: Request, res: Response) => {
 		await sendVerificationCode(user.email!, verificationCode, "email");
 
 		if (user) {
-			return res.status(200).json({
+			return res.status(201).json({
 				message: "User created successfully",
 			});
 		}
@@ -99,7 +99,7 @@ export const login = async (req: Request, res: Response) => {
 
 	const existingUser: User | null = await prisma.user.findFirst({
 		where: {
-			username: loginData.data.username,
+			email: loginData.data.email,
 		},
 	});
 
@@ -189,9 +189,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 
-			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-
-			return res.status(200).redirect("/");
+			return res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
 		}
 
 		const user = await prisma.user.create({
@@ -210,9 +208,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 		});
 
 		const session = await lucia.createSession(user.id, {});
-		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-
-		return res.status(200).redirect("/");
+		return res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
@@ -299,7 +295,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
-			return res.status(200).redirect("/");
+			return res.status(309).redirect("/dashboard");
 		}
 
 		const user = await prisma.user.create({
@@ -307,7 +303,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 				username: googleUser.name,
 				email: googleUser.email,
 				avatar: googleUser.picture,
-				emailVerified: googleUser.emailVerified,
+				emailVerified: googleUser.email_verified,
 				Account: {
 					create: {
 						providerAccountId: googleUser.sub,
@@ -318,7 +314,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 		});
 
 		const session = await lucia.createSession(user.id, {});
-		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/");
+		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
@@ -357,4 +353,5 @@ interface GoogleUser {
 	email: string;
 	name: string;
 	picture: string;
+	email_verified: boolean;
 }
