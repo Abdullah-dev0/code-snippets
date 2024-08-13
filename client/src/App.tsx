@@ -8,15 +8,15 @@ import Signup from "@/pages/Signup.tsx";
 export const App = () => {
 	return (
 		<Router>
-			<Layout>
-				<Routes>
+			<Routes>
+				<Route element={<Layout />}>
 					<Route path="/" element={<HomePage />} />
 					<Route path="/auth/sign-up" element={<Signup />} />
 					<Route path="/Otp-verification" element={<InputOTPForm />} />
 					<Route path="/Dashboard" element={<Dashboard />} />
 					<Route path="*" element={<div>404</div>} />
-				</Routes>
-			</Layout>
+				</Route>
+			</Routes>
 		</Router>
 	);
 };

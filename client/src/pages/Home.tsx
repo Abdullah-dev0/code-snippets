@@ -1,19 +1,20 @@
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { useInterval } from "@/Hooks/useInterval";
-import { useCallback, useState } from "react";
+import { useCurrentUser } from "@/Hooks/useCurrentUser";
+import axios from "axios";
 
 const HomePage = () => {
-	const [count, setCount] = useState(0);
+	const { data } = useCurrentUser();
 
-	useInterval(
-		useCallback(() => {
-			setCount((count) => count + 1);
-		}, []),
-		1500,
-	);
+	console.log(data);
 
-	console.log("HomePage rendered");
+	const onSubmit = async () => {
+		const response = await axios.post("/api/add", {
+			message: "hey my im abdullah ",
+		});
+
+		console.log(response);
+	};
 	return (
 		<div>
 			<Button>Sign In</Button>
@@ -21,8 +22,9 @@ const HomePage = () => {
 			<Link to="/auth/sign-up">
 				<Button>Sign Up</Button>
 			</Link>
-
-			<p>{count} seconds have elapsed since the component was mounted.</p>
+			<div>
+				<button onClick={onSubmit}>add</button>
+			</div>
 		</div>
 	);
 };

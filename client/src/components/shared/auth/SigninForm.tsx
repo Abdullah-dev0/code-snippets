@@ -48,7 +48,7 @@ export function SigninForm() {
 		<div className="max-w-lg flex flex-col gap-8 justify-center items-center mx-auto w-full max-sm:px-6">
 			<h1 className="text-4xl">Sign-in Form</h1>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-2 w-full">
+				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-4 w-full">
 					<FormField
 						control={form.control}
 						name="email"

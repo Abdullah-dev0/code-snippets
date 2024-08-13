@@ -10,9 +10,18 @@ import { Button } from "../../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
 import { Input } from "../../ui/input";
 import SocialLogin from "./SocialLogin";
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export function SignupForm() {
-	const Navigate = useNavigate();
+	const [error, setError] = useState<string | null>("");
+	const [searchParams] = useSearchParams();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const errorParam = searchParams.get("error");
+		setError(errorParam);
+	}, [searchParams]);
 
 	const form = useForm<z.infer<typeof SignupSchema>>({
 		resolver: zodResolver(SignupSchema),
@@ -39,7 +48,7 @@ export function SignupForm() {
 		},
 		onSuccess: () => {
 			toast.success("Sign up successfu please verify your email.");
-			Navigate("/Otp-verification");
+			navigate("/Otp-verification");
 		},
 	});
 
@@ -47,7 +56,7 @@ export function SignupForm() {
 		<div className="max-w-lg flex flex-col gap-8 justify-center items-center mx-auto w-full max-sm:px-6">
 			<h1 className="text-4xl">Sign-up Form</h1>
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-2 w-full">
+				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-4 w-full">
 					<FormField
 						disabled={isPending}
 						control={form.control}
@@ -87,6 +96,7 @@ export function SignupForm() {
 									<Input type="password" placeholder="Password" {...field} />
 								</FormControl>
 								<FormMessage />
+								{error && <p className="text-md bg-red-500 p-2 w-full text-white text-center">{error}</p>}
 							</FormItem>
 						)}
 					/>

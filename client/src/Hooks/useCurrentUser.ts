@@ -20,9 +20,5 @@ export const useCurrentUser = () => {
 		retryDelay: 5000, // Delay between retries
 	});
 
-	if (isLoading) {
-		console.log("Loading...");
-	}
-
 	return { isLoading, isError, data, error };
 };

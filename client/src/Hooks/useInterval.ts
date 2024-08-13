@@ -1,9 +1,13 @@
-import { useEffect } from "react";
+import { useTimer } from "react-timer-hook";
 
-export const useInterval = (callback: () => void, delay: number) => {
-	useEffect(() => {
-		const intervalId = setInterval(callback, delay);
+export const useInterval = (fn: () => void) => {
+	const time = new Date();
+	time.setSeconds(time.getSeconds() + 59); // 1 minute countdown
 
-		return () => clearInterval(intervalId);
-	}, [callback, delay]);
+	const { seconds, minutes, isRunning, restart } = useTimer({
+		expiryTimestamp: time,
+		onExpire: fn,
+	});
+
+	return { seconds, minutes, isRunning, restart };
 };

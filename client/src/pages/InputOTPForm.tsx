@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
+import { useInterval } from "@/Hooks/useInterval";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,7 +20,11 @@ const FormSchema = z.object({
 
 export function InputOTPForm() {
 	const Navigate = useNavigate();
-
+	const [loading, setLoading] = useState(false);
+	const { seconds, isRunning, restart } = useInterval(() => {
+		toast.error("Code Expired ! Please request a new");
+		return;
+	});
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
@@ -29,9 +35,39 @@ export function InputOTPForm() {
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (values: z.infer<typeof FormSchema>) => {
 			const response = await axios.post("/api/email-verification", values);
-			return response.data;
+			console.log(response);
+			return response;
 		},
 		onError: (error: any) => {
+			if (axios.isAxiosError(error)) {
+				if (error.response) {
+					toast.error(error.response.data.error);
+				} else {
+					toast.error("An unexpected error occurred. Please try again.");
+				}
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
+		},
+		onSuccess: (response) => {
+			if (response.status === 201) {
+				toast.success("Email Verified Successfully");
+				Navigate("/dashboard");
+			}
+		},
+	});
+
+	async function handleSubmit(e: React.FormEvent) {
+		e.preventDefault();
+
+		try {
+			setLoading(true);
+			const response = await axios.post("/api/resent-verification");
+			if (response.status === 201) {
+				toast.success("Code Sent Successfully");
+				restart(new Date(new Date().getTime() + 59 * 1000));
+			}
+		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				if (error.response) {
 					toast.error(error.response.data.error);
@@ -39,12 +75,11 @@ export function InputOTPForm() {
 			} else {
 				toast.error("An unexpected error occurred. Please try again.");
 			}
-		},
-		onSuccess: () => {
-			toast.success("Email Verified Successfully");
-			Navigate("/dashboard");
-		},
-	});
+		} finally {
+			// Set loading state to false
+			setLoading(false);
+		}
+	}
 
 	return (
 		<div className="flex items-center justify-center h-screen w-full">
@@ -73,7 +108,15 @@ export function InputOTPForm() {
 							</FormItem>
 						)}
 					/>
-
+					<p>
+						{isRunning ? (
+							`Code Expires in  ${seconds}s`
+						) : (
+							<Button onClick={(e) => handleSubmit(e)} disabled={loading}>
+								{loading ? "Sending..." : "Resend Code"}
+							</Button>
+						)}
+					</p>
 					<Button type="submit" className="w-full" disabled={isPending}>
 						{isPending ? "Verifying..." : "Verify"}
 					</Button>

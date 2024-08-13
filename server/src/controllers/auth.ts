@@ -72,12 +72,14 @@ export const signUp = async (req: Request, res: Response) => {
 
 		const verificationCode = await generateEmailVerificationCode(user.id, user.email!);
 
-		await sendVerificationCode(user.email!, verificationCode, "email");
+		await sendVerificationCode(user.email!, verificationCode);
 
 		if (user) {
-			return res.status(201).json({
-				message: "User created successfully",
-			});
+			const session = await lucia.createSession(user.id, {});
+			return res
+				.status(201)
+				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
+				.redirect("/dashboard");
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });
@@ -132,7 +134,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const githubLogin = async (req: Request, res: Response) => {
 	if (res.locals.session) {
-		return res.status(200).json({ error: "You must be logged in to logout" }).end();
+		return res.status(200).json({ error: "You are login" }).end();
 	}
 
 	const state = generateState();
@@ -180,16 +182,38 @@ export const githubCallback = async (req: Request, res: Response) => {
 
 		const githubUser: User & Github = await githubUserResponse.json();
 
+		const registeredEmail = await prisma.user.findFirst({
+			where: {
+				email: githubUser.email,
+			},
+		});
+
+		if (registeredEmail) {
+			const errorMessage = encodeURIComponent("This email is already registered.");
+			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
+		}
+
 		const existingUser = await prisma.account.findFirst({
 			where: {
 				providerAccountId: githubUser.id.toString(),
+			},
+			select: {
+				user: {
+					select: {
+						username: true,
+						email: true,
+					},
+				},
+				userId: true,
 			},
 		});
 
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
-
-			return res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
+			return res
+				.status(201)
+				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
+				.redirect("/dashboard");
 		}
 
 		const user = await prisma.user.create({
@@ -208,7 +232,10 @@ export const githubCallback = async (req: Request, res: Response) => {
 		});
 
 		const session = await lucia.createSession(user.id, {});
-		return res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
+		return res
+			.status(201)
+			.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
+			.redirect("/dashboard");
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
@@ -284,6 +311,17 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 		const googleUser: User & GoogleUser = await response.json();
 
+		const registeredEmail = await prisma.user.findFirst({
+			where: {
+				email: googleUser.email,
+			},
+		});
+
+		if (registeredEmail) {
+			const errorMessage = encodeURIComponent("This email is already registered.");
+			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
+		}
+
 		const existingUser = await prisma.account.findFirst({
 			where: {
 				providerAccountId: googleUser.sub,
@@ -346,6 +384,8 @@ export const logout = async (req: Request, res: Response) => {
 interface Github {
 	login: string;
 	avatar_url: string;
+	email_verified: boolean;
+	github_id: number;
 }
 
 interface GoogleUser {

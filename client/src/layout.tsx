@@ -1,9 +1,10 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 
-const Layout = (props: React.PropsWithChildren<Record<string, unknown>>) => {
+const Layout = () => {
 	return (
 		<>
-			<main>{props.children}</main>
+			<Outlet />
 		</>
 	);
 };
