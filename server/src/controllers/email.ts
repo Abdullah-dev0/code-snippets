@@ -67,14 +67,13 @@ export const resendVerification = async (req: Request, res: Response) => {
 		},
 	});
 
-	console.log(existingUser);
-
 	if (!existingUser) {
 		return res.status(404).json({ error: "User not found" });
 	}
 
 	const verificationCode = await generateEmailVerificationCode(existingUser.id, existingUser.email!);
-	console.log(verificationCode);
+
+	
 	const sentVerificationCode = await sendVerificationCode(existingUser.email!, verificationCode);
 
 	// Respond with success
