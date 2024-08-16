@@ -182,29 +182,9 @@ export const githubCallback = async (req: Request, res: Response) => {
 
 		const githubUser: User & Github = await githubUserResponse.json();
 
-		const registeredEmail = await prisma.user.findFirst({
-			where: {
-				email: githubUser.email,
-			},
-		});
-
-		if (registeredEmail) {
-			const errorMessage = encodeURIComponent("This email is already registered.");
-			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
-		}
-
 		const existingUser = await prisma.account.findFirst({
 			where: {
 				providerAccountId: githubUser.id.toString(),
-			},
-			select: {
-				user: {
-					select: {
-						username: true,
-						email: true,
-					},
-				},
-				userId: true,
 			},
 		});
 
@@ -214,6 +194,17 @@ export const githubCallback = async (req: Request, res: Response) => {
 				.status(201)
 				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
 				.redirect("/dashboard");
+		}
+
+		const registeredEmail = await prisma.user.findFirst({
+			where: {
+				email: githubUser.email,
+			},
+		});
+
+		if (registeredEmail) {
+			const errorMessage = encodeURIComponent("This email is already registered.");
+			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
 		}
 
 		const user = await prisma.user.create({
@@ -311,17 +302,6 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 		const googleUser: User & GoogleUser = await response.json();
 
-		const registeredEmail = await prisma.user.findFirst({
-			where: {
-				email: googleUser.email,
-			},
-		});
-
-		if (registeredEmail) {
-			const errorMessage = encodeURIComponent("This email is already registered.");
-			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
-		}
-
 		const existingUser = await prisma.account.findFirst({
 			where: {
 				providerAccountId: googleUser.sub,
@@ -334,6 +314,17 @@ export const googleCallback = async (req: Request, res: Response) => {
 			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
 			return res.status(309).redirect("/dashboard");
+		}
+
+		const registeredEmail = await prisma.user.findFirst({
+			where: {
+				email: googleUser.email,
+			},
+		});
+
+		if (registeredEmail) {
+			const errorMessage = encodeURIComponent("This email is already registered.");
+			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
 		}
 
 		const user = await prisma.user.create({
@@ -367,7 +358,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	if (!res.locals.session) {
-		return res.status(401).json({ error: "already Logout" }).end();
+		return res.status(401).json({ error: "Already Logout" }).end();
 	}
 
 	await lucia.invalidateSession(res.locals.session.id);

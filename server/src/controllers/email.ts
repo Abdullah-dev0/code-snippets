@@ -48,7 +48,7 @@ export const emailVerification = async (req: Request, res: Response) => {
 		res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
 		// Respond with success
-		return res.status(201).json({ message: "Email verified successfully" });
+		return res.status(200).json({ message: "Email verified successfully" });
 	} catch (error) {
 		console.error("Error during email verification:", error);
 		// Handle unexpected errors

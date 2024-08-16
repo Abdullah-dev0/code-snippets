@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useCurrentUser = () => {
-	const { isLoading, isError, data, error } = useQuery({
+	const { isLoading, isError, data } = useQuery({
 		queryKey: ["currentUser"],
 		queryFn: async () => {
 			try {
@@ -14,11 +14,17 @@ export const useCurrentUser = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 10, // Data will be considered fresh for 10 minutes
+		gcTime: 1000 * 60 * 60, // Garbage collection after 1 hour
 		refetchOnMount: false, // Disable refetch on mount
-		refetchInterval: false, // Disable regular interval refetch
-		retry: 1, // Number of retries on failure
-		retryDelay: 5000, // Delay between retries
+		refetchOnWindowFocus: false,
+		retry: (failureCount, error: any) => {
+			if (error?.response?.status === 401) {
+				return false;
+			}
+			return failureCount < 2;
+		},
+		retryDelay: 2000, // Delay between retries
 	});
 
-	return { isLoading, isError, data, error };
+	return { isLoading, isError, data };
 };

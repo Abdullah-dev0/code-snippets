@@ -22,7 +22,7 @@ export function InputOTPForm() {
 	const Navigate = useNavigate();
 	const [loading, setLoading] = useState(false);
 	const { seconds, isRunning, restart } = useInterval(() => {
-		toast.error("Code Expired ! Please request a new");
+		toast.error("Code Expired ! Please Request a new");
 		return;
 	});
 	const form = useForm<z.infer<typeof FormSchema>>({
@@ -35,7 +35,6 @@ export function InputOTPForm() {
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (values: z.infer<typeof FormSchema>) => {
 			const response = await axios.post("/api/email-verification", values);
-			console.log(response);
 			return response;
 		},
 		onError: (error: any) => {
@@ -50,7 +49,7 @@ export function InputOTPForm() {
 			}
 		},
 		onSuccess: (response) => {
-			if (response.status === 201) {
+			if (response.status === 200) {
 				toast.success("Email Verified Successfully");
 				Navigate("/dashboard");
 			}

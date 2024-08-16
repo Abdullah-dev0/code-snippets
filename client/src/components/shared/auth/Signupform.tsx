@@ -12,6 +12,7 @@ import { Input } from "../../ui/input";
 import SocialLogin from "./SocialLogin";
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { defaultValues } from "@/constants";
 
 export function SignupForm() {
 	const [error, setError] = useState<string | null>("");
@@ -25,11 +26,7 @@ export function SignupForm() {
 
 	const form = useForm<z.infer<typeof SignupSchema>>({
 		resolver: zodResolver(SignupSchema),
-		defaultValues: {
-			username: "",
-			email: "",
-			password: "",
-		},
+		defaultValues: defaultValues,
 	});
 
 	const { mutate, isPending } = useMutation({
@@ -105,7 +102,7 @@ export function SignupForm() {
 					</Button>
 				</form>
 			</Form>
-			<SocialLogin />
+			<SocialLogin disabled={isPending} />
 		</div>
 	);
 }

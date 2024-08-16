@@ -4,8 +4,8 @@ import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import axios from "axios";
 
 const HomePage = () => {
-	const { data } = useCurrentUser();
-
+	const { data, isLoading } = useCurrentUser();
+	if (isLoading) return <div>Loading...</div>;
 	console.log(data);
 
 	const onSubmit = async () => {
@@ -25,6 +25,9 @@ const HomePage = () => {
 			<div>
 				<button onClick={onSubmit}>add</button>
 			</div>
+			<Link to="/Dashboard">
+				<Button>Dashboard</Button>
+			</Link>
 		</div>
 	);
 };
