@@ -1,15 +1,11 @@
-import { useCurrentUser } from "@/Hooks/useCurrentUser";
+import Card from "@/components/shared/Card";
+import Snippetform from "@/components/shared/Snippetform";
 
 const Dashboard = () => {
-	const { data } = useCurrentUser();
 	return (
-		<div>
-			<p>
-				Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident expedita amet quidem vel, nesciunt cupiditate
-				blanditiis temporibus perferendis, molestias consequuntur, accusamus tempore. Eveniet!
-			</p>
-
-			<pre>{JSON.stringify(data, null, 2)}</pre>
+		<div className="">
+			<Card />
+			<Snippetform />
 		</div>
 	);
 };

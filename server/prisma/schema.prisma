@@ -29,6 +29,7 @@ model User {
   Post                  Post[]
   Account               Account[]
   emailVerificationCode emailVerificationCode?
+  Snippet               Snippet[]
 }
 
 model Account {
@@ -64,4 +65,13 @@ model Post {
   message String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Snippet {
+  id       String @id @default(cuid())
+  userId   String
+  title    String
+  code     String
+  language String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

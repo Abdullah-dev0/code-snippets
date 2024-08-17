@@ -2,7 +2,7 @@ import { navLinks } from "@/constants";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 const Sidebar = () => {
 	const Navigate = useNavigate();
@@ -25,7 +25,7 @@ const Sidebar = () => {
 	};
 
 	return (
-		<aside className="min-w-60 h-screen ">
+		<aside className="min-w-60 h-screen shadow-lg dark:shadow-slate-900 hidden lg:block">
 			<div className="flex justify-center items-center gap-3 p-5 mt-5">
 				<NavLink to="/" className="">
 					<img src="/src/public/logo.png" width={40} height={40} alt="SnippetNest Logo" />
@@ -35,27 +35,27 @@ const Sidebar = () => {
 				</h1>
 			</div>
 
-			<ul className="mt-12 space-y-4">
+			<ul className="mt-12 space-y-4 p-4 text-slate-800 dark:text-white">
 				{navLinks.map((link) => (
 					<NavLink
 						to={link.Link}
 						key={link.title}
 						className={({ isActive }) =>
-							`flex gap-4 rounded-lg  transition-all duration-300 ${isActive ? "bg-purple-700" : null}`
+							`flex gap-4 rounded-lg  transition-all duration-300 ${isActive ? "bg-purple-700 text-white" : ""}`
 						}>
-						<li className="flex gap-4 p-3 text-xl items-center ps-4 ">
-							<img src={link.icon} className="h-7 w-7 dark:invert" alt={link.title} />
+						<li className="flex gap-4 p-3 text-xl items-center">
+							<img src={link.icon} className="h-7 w-7 dark:invert fill-red-900" alt={link.title} />
 							{link.title}
 						</li>
 					</NavLink>
 				))}
 			</ul>
 
-			<div className="mt-12 w-full">
+			<div className="mt-12 w-full p-3">
 				<Button
 					variant={"ghost"}
 					onClick={handleLogout}
-					className="flex gap-4 hover:bg-purple-700 w-full justify-start p-6 text-xl items-center ps-4">
+					className="flex gap-4 hover:bg-purple-700 w-full justify-start p-6 text-xl items-center">
 					<img src="/src/public/logout.svg" className="h-6 w-6 dark:invert" alt="logout" />
 					Logout
 				</Button>

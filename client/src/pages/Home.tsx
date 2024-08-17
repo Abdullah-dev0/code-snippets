@@ -4,9 +4,9 @@ import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import axios from "axios";
 
 const HomePage = () => {
-	const { data, isLoading } = useCurrentUser();
+	const { user, isLoading } = useCurrentUser();
 	if (isLoading) return <div>Loading...</div>;
-	console.log(data);
+	console.log(user);
 
 	const onSubmit = async () => {
 		const response = await axios.post("/api/add", {

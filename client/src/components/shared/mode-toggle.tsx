@@ -5,7 +5,7 @@ export function ModeToggle() {
 	const { theme, setTheme } = useTheme();
 
 	return (
-		<div className="flex items-center pt-2">
+		<div className="flex">
 			<Switch
 				id="dark-mode"
 				defaultChecked

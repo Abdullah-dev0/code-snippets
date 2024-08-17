@@ -7,13 +7,13 @@ export const navLinks = [
 	},
 	{
 		id: 2,
-		title: "favorites",
+		title: "Favorites",
 		Link: "favorites",
 		icon: "/src/public/Heart.svg",
 	},
 	{
 		id: 3,
-		title: "bin",
+		title: "Bin",
 		Link: "bin",
 		icon: "/src/public/bin.svg",
 	},
