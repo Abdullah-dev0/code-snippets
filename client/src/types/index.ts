@@ -8,3 +8,11 @@ export interface User {
 		createdAt: string;
 	};
 }
+
+export interface Snippet {
+	id: string;
+	title: string;
+	language: string;
+	description: string;
+	code: string;
+}

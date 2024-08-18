@@ -1,6 +1,6 @@
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import { ModeToggle } from "./mode-toggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
 	const { user } = useCurrentUser();

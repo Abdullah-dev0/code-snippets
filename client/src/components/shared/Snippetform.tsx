@@ -1,50 +1,145 @@
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
+import type { language } from "@/constants";
+import { languages, snippetDefaultValues } from "@/constants";
+import { SnippetSchema } from "@/lib/snippetSchema/SnippetFom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import "ace-builds/src-noconflict/ext-error_marker";
+import "ace-builds/src-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/ext-searchbox";
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/theme-monokai";
+import AceEditor from "react-ace";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "../ui/button";
 
-const formSchema = z.object({
-	username: z.string().min(3),
-});
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 const Snippetform = () => {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			username: "",
-		},
+	const [isOpen, setIsOpen] = useState(false);
+	const form = useForm<z.infer<typeof SnippetSchema>>({
+		resolver: zodResolver(SnippetSchema),
+		defaultValues: snippetDefaultValues,
 	});
 
 	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
-	}
+
+	const onSubmit = async (data: any) => {
+		try {
+			// Simulate form submission or an API call
+			await new Promise((resolve) => setTimeout(resolve, 10000));
+			// If submission is successful, close the sheet
+
+			console.log(data);
+			setIsOpen(false);
+			form.reset();
+		} catch (error) {
+			console.error("Error submitting form:", error);
+		}
+	};
 
 	return (
-		<Sheet>
-			<SheetTrigger>
-				<Button>Create</Button>
+		<Sheet open={isOpen} onOpenChange={setIsOpen}>
+			<SheetTrigger asChild>
+				<Button onClick={() => setIsOpen(true)}>Create</Button>
 			</SheetTrigger>
-			<SheetContent className="md:min-w-[500px] ">
-				<SheetHeader>
+			<SheetContent className="md:min-w-[600px] w-full overflow-y-scroll">
+				<SheetHeader className="space-y-6">
+					<div className="flex flex-col gap-2">
+						<h1 className="text-2xl">Create Snippet</h1>
+						<p className="text-sm">And share with your friends</p>
+					</div>
 					<SheetDescription className="mt-12">
 						<Form {...form}>
 							<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 								<FormField
 									control={form.control}
-									name="username"
+									name="title"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Username</FormLabel>
+											<FormLabel>Title</FormLabel>
 											<FormControl>
-												<Input placeholder="shadcn" {...field} />
+												<Input placeholder="Title" {...field} />
 											</FormControl>
-											<FormDescription>This is your public display name.</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="language"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Select Language</FormLabel>
+											<FormControl>
+												<Select onValueChange={field.onChange}>
+													<SelectTrigger>
+														<SelectValue placeholder="language" />
+													</SelectTrigger>
+													<SelectContent>
+														{languages.map((language: language) => (
+															<SelectItem key={language} value={language}>
+																{language}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="description"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Description</FormLabel>
+											<FormControl>
+												<Textarea placeholder="Description" {...field} />
+											</FormControl>
+											<FormDescription>Describe your snippet in 300 characters or less.</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="code"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Code</FormLabel>
+											<FormControl>
+												<div className="overflow-hidden">
+													<AceEditor
+														placeholder="Code"
+														width="100%"
+														mode="typescript"
+														theme="monokai"
+														name="code"
+														onChange={field.onChange}
+														fontSize={16}
+														lineHeight={24}
+														debounceChangePeriod={1000}
+														onCopy={() => console.log("onCopy")}
+														showPrintMargin={true}
+														showGutter={true}
+														highlightActiveLine={true}
+														value={field.value}
+														setOptions={{
+															enableBasicAutocompletion: true,
+															enableLiveAutocompletion: true,
+															enableSnippets: true,
+															showLineNumbers: true,
+															tabSize: 2,
+														}}
+													/>
+												</div>
+											</FormControl>
 											<FormMessage />
 										</FormItem>
 									)}

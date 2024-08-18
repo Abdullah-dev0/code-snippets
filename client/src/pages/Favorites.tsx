@@ -4,7 +4,7 @@ const Favorites = () => {
 	const { user } = useCurrentUser();
 	return (
 		<div className="mt-7 w-full">
-			<p></p>
+			faviorites
 		</div>
 	);
 };

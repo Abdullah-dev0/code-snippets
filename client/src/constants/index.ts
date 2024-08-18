@@ -24,3 +24,27 @@ export const defaultValues = {
 	email: "",
 	password: "",
 };
+
+export const snippetDefaultValues = {
+	title: "",
+	language: "",
+	description: "",
+	code: "",
+};
+
+export const languages = [
+	"javascript",
+	"typescript",
+	"python",
+	"java",
+	"golang",
+	"ruby",
+	"markdown",
+	"csharp",
+	"xml",
+	"json",
+];
+
+export type language = typeof languages[number];
+
+
