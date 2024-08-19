@@ -1,4 +1,3 @@
-import React from "react";
 import Lottie from "react-lottie";
 import programming1 from "../../public/programming1.json";
 

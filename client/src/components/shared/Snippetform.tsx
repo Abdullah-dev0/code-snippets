@@ -6,13 +6,12 @@ import type { language } from "@/constants";
 import { languages, snippetDefaultValues } from "@/constants";
 import { SnippetSchema } from "@/lib/snippetSchema/SnippetFom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import "ace-builds/src-noconflict/ext-error_marker";
-import "ace-builds/src-noconflict/ext-language_tools";
-import "ace-builds/src-noconflict/ext-searchbox";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-monokai";
 import AceEditor from "react-ace";
 import { useForm } from "react-hook-form";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/ext-language_tools";
+
 import { z } from "zod";
 import { Button } from "../ui/button";
 
@@ -40,6 +39,10 @@ const Snippetform = () => {
 		} catch (error) {
 			console.error("Error submitting form:", error);
 		}
+	};
+
+	const onCopy = (text: string) => {
+		console.log("text copied", text);
 	};
 
 	return (
@@ -118,14 +121,14 @@ const Snippetform = () => {
 													<AceEditor
 														placeholder="Code"
 														width="100%"
-														mode="typescript"
+														mode="javascript"
 														theme="monokai"
 														name="code"
 														onChange={field.onChange}
 														fontSize={16}
 														lineHeight={24}
 														debounceChangePeriod={1000}
-														onCopy={() => console.log("onCopy")}
+														onCopy={(text: string) => onCopy(text)}
 														showPrintMargin={true}
 														showGutter={true}
 														highlightActiveLine={true}
