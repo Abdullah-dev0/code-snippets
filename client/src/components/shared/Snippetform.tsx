@@ -9,6 +9,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AceEditor from "react-ace";
 import { useForm } from "react-hook-form";
 import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-python";
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/mode-html";
+import "ace-builds/src-noconflict/mode-typescript";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools";
 
@@ -17,6 +21,9 @@ import { Button } from "../ui/button";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { toast } from "sonner";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
 
 const Snippetform = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -27,19 +34,27 @@ const Snippetform = () => {
 
 	// 2. Define a submit handler.
 
-	const onSubmit = async (data: any) => {
-		try {
-			// Simulate form submission or an API call
-			await new Promise((resolve) => setTimeout(resolve, 10000));
-			// If submission is successful, close the sheet
-
-			console.log(data);
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (values: z.infer<typeof SnippetSchema>) => {
+			const response = await axios.post("/api/create", values);
+			return response.data;
+		},
+		onError: (error: any) => {
+			if (axios.isAxiosError(error)) {
+				if (error.response) {
+					toast.error(error.response.data.error);
+				} else {
+					toast.error("An unexpected error occurred. Please try again.");
+				}
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
+		},
+		onSuccess: () => {
+			toast.success("Snippet added successfully");
 			setIsOpen(false);
-			form.reset();
-		} catch (error) {
-			console.error("Error submitting form:", error);
-		}
-	};
+		},
+	});
 
 	const onCopy = (text: string) => {
 		console.log("text copied", text);
@@ -58,8 +73,9 @@ const Snippetform = () => {
 					</div>
 					<SheetDescription className="mt-12">
 						<Form {...form}>
-							<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+							<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-8">
 								<FormField
+									disabled={isPending}
 									control={form.control}
 									name="title"
 									render={({ field }) => (
@@ -75,6 +91,7 @@ const Snippetform = () => {
 								<FormField
 									control={form.control}
 									name="language"
+									disabled={isPending}
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>Select Language</FormLabel>
@@ -99,6 +116,7 @@ const Snippetform = () => {
 								<FormField
 									control={form.control}
 									name="description"
+									disabled={isPending}
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>Description</FormLabel>
@@ -113,6 +131,7 @@ const Snippetform = () => {
 								<FormField
 									control={form.control}
 									name="code"
+									disabled={isPending}
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel>Code</FormLabel>
@@ -121,7 +140,7 @@ const Snippetform = () => {
 													<AceEditor
 														placeholder="Code"
 														width="100%"
-														mode="javascript"
+														mode={form.getValues("language")}
 														theme="monokai"
 														name="code"
 														onChange={field.onChange}
@@ -131,6 +150,7 @@ const Snippetform = () => {
 														onCopy={(text: string) => onCopy(text)}
 														showPrintMargin={true}
 														showGutter={true}
+														wrapEnabled={true}
 														highlightActiveLine={true}
 														value={field.value}
 														setOptions={{
@@ -138,7 +158,7 @@ const Snippetform = () => {
 															enableLiveAutocompletion: true,
 															enableSnippets: true,
 															showLineNumbers: true,
-															tabSize: 2,
+															tabSize: 0,
 														}}
 													/>
 												</div>
@@ -147,7 +167,9 @@ const Snippetform = () => {
 										</FormItem>
 									)}
 								/>
-								<Button type="submit">Submit</Button>
+								<Button disabled={isPending} type="submit">
+									{isPending ? "Loading..." : "Submit"}
+								</Button>
 							</form>
 						</Form>
 					</SheetDescription>

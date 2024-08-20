@@ -8,10 +8,6 @@ const AuthProvider = () => {
 		return <div className="text-center">Loading...</div>; // You can replace this with a loader/spinner
 	}
 
-	if (isError) {
-		return <div className="text-center">An error occurred</div>;
-	}
-
 	if (!user) {
 		return <Navigate to="auth/sign-up" />;
 	}

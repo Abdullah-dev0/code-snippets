@@ -7,7 +7,7 @@ const Layout = () => {
 		<>
 			<div className="flex max-w-screen-2xl mx-auto">
 				<Sidebar />
-				<main className="p-5 w-full flex flex-col gap-12">
+				<main className="p-5 w-full flex flex-col gap-12 lg:ms-60">
 					<Navbar />
 					<Outlet />
 				</main>

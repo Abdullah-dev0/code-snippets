@@ -1,162 +1,62 @@
 import { useTheme } from "@/providers/theme-provider";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { atelierLakesideDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AddFavorite from "./AddFavorite";
 import DeleteSnippet from "./DeleteSnippet";
+import { Snippet } from "@/types";
 
-export const Card = () => {
+interface CardProps {
+	snippet: Snippet;
+}
+
+export const Card = ({ snippet }: CardProps) => {
 	const { theme } = useTheme();
 	return (
 		<div className="shadow-md p-3 flex flex-col gap-4">
-			<Header />
-			<CodeBlock theme={theme} />
-			<Footer />
+			<Header snippet={snippet} />
+			<CodeBlock theme={theme} snippet={snippet} />
+			<Footer snippet={snippet} />
 		</div>
 	);
 };
 
-//Header, Footer, and CodeBlock components
-
-const Header = () => {
+// Header Component
+const Header = ({ snippet }: CardProps) => {
 	return (
 		<header className="flex flex-col gap-3">
 			<div className="flex justify-between">
-				<h1>code title</h1>
+				<h1 className="text-md font-bold">{snippet.title}</h1>
 				<AddFavorite />
 			</div>
-			<p>Date</p>
-			<p>Descrption</p>
+			{/* <p>{new Date(snippet.createdAt).toLocaleDateString()}</p> */}
+			<p>{snippet.description}</p>
 		</header>
 	);
 };
 
-const CodeBlock = ({ theme }: { theme: "dark" | "light" | "system" }) => {
-	const codeString = `import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { z } from "zod";
-import { SignupSchema } from "../../../lib/formSchema/FormSchema";
-import { Button } from "../../ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
-import { Input } from "../../ui/input";
-import SocialLogin from "./SocialLogin";
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { defaultValues } from "@/constants";
-
-export function SignupForm() {
-	const [error, setError] = useState<string | null>("");
-	const [searchParams] = useSearchParams();
-	const navigate = useNavigate();
-  
-	useEffect(() => {
-		const errorParam = searchParams.get("error");
-		setError(errorParam);
-	}, [searchParams]);
-
-	const form = useForm<z.infer<typeof SignupSchema>>({
-		resolver: zodResolver(SignupSchema),
-		defaultValues: defaultValues,
-	});
-
-	const { mutate, isPending } = useMutation({
-		mutationFn: async (values: z.infer<typeof SignupSchema>) => {
-			const response = await axios.post("/api/auth/signup", values);
-			return response.data;
-		},
-		onError: (error: any) => {
-			if (axios.isAxiosError(error)) {
-				if (error.response) {
-					toast.error(error.response.data.error);
-				}
-        } else {
-				toast.error("An unexpected error occurred. Please try again.");
-			}
-      },
-      onSuccess: () => {
-        toast.success("Sign up successfu please verify your email.");
-			navigate("/Otp-verification");
-      },
-      });
-      
-      return (
-		<div className="max-w-lg flex flex-col gap-8 justify-center items-center mx-auto w-full max-sm:px-6">
-    <h1 className="text-4xl">Sign-up Form</h1>
-    <Form {...form}>
-    <form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-4 w-full">
-    <FormField
-						disabled={isPending}
-						control={form.control}
-						name="username"
-						render={({ field }) => (
-							<FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-              <Input type="text" placeholder="Username" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-              )}
-					/>
-					<FormField
-						control={form.control}
-						name="email"
-						disabled={isPending}
-						render={({ field }) => (
-							<FormItem>
-              <FormLabel>Email</FormLabel>
-								<FormControl>
-									<Input type="email" placeholder="Email" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						disabled={isPending}
-						name="password"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Password</FormLabel>
-								<FormControl>
-									<Input type="password" placeholder="Password" {...field} />
-								</FormControl>
-								<FormMessage />
-								{error && <p className="text-md bg-red-500 p-2 w-full text-white text-center">{error}</p>}
-							</FormItem>
-						)}
-					/>
-					<Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "Loading..." : "Submit"}
-					</Button>
-				</form>
-			</Form>
-			<SocialLogin disabled={isPending} />
-		</div>
-	);
-}
-`;
-
-	const subString = codeString.substring(0, 500) + " ...";
+// CodeBlock Component
+const CodeBlock = ({ theme, snippet }: { theme: "dark" | "light" | "system"; snippet: Snippet }) => {
+	const subString = snippet.code.substring(0, 500) + " ...";
 
 	return (
-		<div className="rounded-md text-sm overflow-hidden truncate">
-			<SyntaxHighlighter language="typescript" style={theme === "dark" ? a11yDark : materialLight}>
+		<div className="rounded-md text-sm overflow-hidden">
+			<SyntaxHighlighter
+				customStyle={{ maxHeight: "260px" }}
+				wrapLongLines
+				language={snippet.language}
+				style={theme === "dark" ? atelierLakesideDark : materialLight}>
 				{subString}
 			</SyntaxHighlighter>
 		</div>
 	);
 };
 
-const Footer = () => {
+// Footer Component
+const Footer = ({ snippet }: CardProps) => {
 	return (
 		<footer className="footer flex justify-between">
-			<p>Code language</p>
+			<p>{snippet.language}</p>
 			<DeleteSnippet />
 		</footer>
 	);
