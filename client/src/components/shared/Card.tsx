@@ -1,7 +1,8 @@
 import { useTheme } from "@/providers/theme-provider";
 // Lazy load the SyntaxHighlighter component
 import { Snippet } from "@/types";
-
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AddFavorite from "./AddFavorite";
 import DeleteSnippet from "./DeleteSnippet";
 
@@ -9,10 +10,13 @@ interface CardProps {
 	snippet: Snippet;
 }
 
+SyntaxHighlighter.supportedLanguages;
+
 export const Card = ({ snippet }: CardProps) => {
 	const { theme } = useTheme();
+
 	return (
-		<div className="shadow-md p-3 flex flex-col gap-4">
+		<div className="p-3 flex flex-col gap-4 h-full ">
 			<Header snippet={snippet} />
 			<CodeBlock theme={theme} snippet={snippet} />
 			<Footer snippet={snippet} />
@@ -35,11 +39,19 @@ const Header = ({ snippet }: CardProps) => {
 };
 
 // CodeBlock Component
-const CodeBlock = ({ theme, snippet }: { theme: "dark" | "light" | "system"; snippet: Snippet }) => {
-	const subString = `${snippet.code.substring(0, 420)}
-	 ...`;
-	// SyntaxHighlighter.registerLanguage("jsx", jsx);
-	return <div className="rounded-md text-sm overflow-hidden">{subString}</div>;
+const CodeBlock = ({ snippet }: { theme: "dark" | "light" | "system"; snippet: Snippet }) => {
+	return (
+		<div className="overflow-hidden max-h-[260px] rounded-md text-sm flex-1">
+			<SyntaxHighlighter
+				showLineNumbers
+				wrapLines
+				customStyle={{ padding: "10px" }}
+				language="javascript"
+				style={a11yDark}>
+				{snippet.code}
+			</SyntaxHighlighter>
+		</div>
+	);
 };
 
 // Footer Component
@@ -47,7 +59,7 @@ const Footer = ({ snippet }: CardProps) => {
 	return (
 		<footer className="footer flex justify-between">
 			<p>{snippet.language}</p>
-			<DeleteSnippet />
+			<DeleteSnippet id={snippet.id} />
 		</footer>
 	);
 };

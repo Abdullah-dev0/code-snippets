@@ -11,7 +11,7 @@ const Sidebar = () => {
 			const response = await axios.get("/api/auth/logout");
 			if (response.status === 200) {
 				toast.success("Logged out successfully");
-				Navigate("/auth/sign-up");
+				Navigate("auth");
 			}
 		} catch (error: any) {
 			if (axios.isAxiosError(error)) {
@@ -30,7 +30,7 @@ const Sidebar = () => {
 				<NavLink to="/" className="">
 					<img src="/src/public/logo.png" width={40} height={40} alt="SnippetNest Logo" />
 				</NavLink>
-				<h1 className="font-bold text-2xl">
+				<h1 className="font-bold text-xl">
 					<span className="text-purple-900">Snippet</span> Nest
 				</h1>
 			</div>

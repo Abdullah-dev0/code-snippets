@@ -2,7 +2,7 @@
 
 import express from "express";
 
-import { addSnippet, getAllSnippets } from "../controllers/snippets.js";
+import { addSnippet, deleteSnippetById, getAllSnippets } from "../controllers/snippets.js";
 import { sessionManagementMiddleware } from "../middleware/auth.js";
 import { verifiedEmail } from "../middleware/verified.js";
 
@@ -12,3 +12,6 @@ snippetRouter.use(sessionManagementMiddleware);
 snippetRouter.use(verifiedEmail);
 snippetRouter.post("/create", addSnippet);
 snippetRouter.get("/getsnippets", getAllSnippets);
+snippetRouter.delete("/delete", deleteSnippetById);
+snippetRouter.put("/update", getAllSnippets);
+snippetRouter.get("/getsnippet", getAllSnippets);

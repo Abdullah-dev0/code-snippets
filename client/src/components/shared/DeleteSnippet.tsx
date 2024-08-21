@@ -1,4 +1,3 @@
-import { Trash2 } from "lucide-react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,8 +9,45 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import axios from "axios";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
-const DeleteSnippet = () => {
+interface DeleteSnippetProps {
+	id: string;
+}
+
+const DeleteSnippet = ({ id }: DeleteSnippetProps) => {
+	const queryClient = useQueryClient();
+	const onsubmit = async () => {
+		// delete snippet
+		try {
+			const response = await axios.delete(`/api/delete`, {
+				data: {
+					id,
+				},
+			});
+
+			if (response.status === 200) {
+				toast.success("Snippet deleted successfully");
+				queryClient.invalidateQueries({
+					queryKey: ["GetAllSnippets"],
+				});
+			}
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				if (error.response) {
+					toast.error(error.response.data.error);
+				} else {
+					toast.error("An unexpected error occurred. Please try again.");
+				}
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
+		}
+	};
+
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger>
@@ -24,7 +60,7 @@ const DeleteSnippet = () => {
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction>Continue</AlertDialogAction>
+					<AlertDialogAction onClick={onsubmit}>Continue</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>
