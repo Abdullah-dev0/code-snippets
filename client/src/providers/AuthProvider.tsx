@@ -2,7 +2,7 @@ import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import { Navigate, Outlet } from "react-router-dom";
 
 const AuthProvider = () => {
-	const { user, isLoading, isError } = useCurrentUser();
+	const { user, isLoading } = useCurrentUser();
 
 	if (isLoading) {
 		return <div className="text-center">Loading...</div>; // You can replace this with a loader/spinner
