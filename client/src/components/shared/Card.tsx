@@ -1,10 +1,9 @@
 import { useTheme } from "@/providers/theme-provider";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { anOldHope } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+// Lazy load the SyntaxHighlighter component
+import { Snippet } from "@/types";
+
 import AddFavorite from "./AddFavorite";
 import DeleteSnippet from "./DeleteSnippet";
-import { Snippet } from "@/types";
 
 interface CardProps {
 	snippet: Snippet;
@@ -38,19 +37,9 @@ const Header = ({ snippet }: CardProps) => {
 // CodeBlock Component
 const CodeBlock = ({ theme, snippet }: { theme: "dark" | "light" | "system"; snippet: Snippet }) => {
 	const subString = `${snippet.code.substring(0, 420)}
- ...`;
-
-	return (
-		<div className="rounded-md text-sm overflow-hidden">
-			<SyntaxHighlighter
-				customStyle={{ maxHeight: "300px" }}
-				wrapLongLines
-				language={snippet.language}
-				style={theme === "dark" ? anOldHope : materialLight}>
-				{subString}
-			</SyntaxHighlighter>
-		</div>
-	);
+	 ...`;
+	// SyntaxHighlighter.registerLanguage("jsx", jsx);
+	return <div className="rounded-md text-sm overflow-hidden">{subString}</div>;
 };
 
 // Footer Component

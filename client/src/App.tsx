@@ -19,7 +19,7 @@ export const App = () => {
 					</Route>
 				</Route>
 				<Route path="Otp-verification" element={<InputOTPForm />} />
-				<Route path="auth/sign-up" element={<Signup />} />
+				<Route path="auth" element={<Signup />} />
 				<Route path="*" element={<div>404</div>} />
 			</Routes>
 		</Router>

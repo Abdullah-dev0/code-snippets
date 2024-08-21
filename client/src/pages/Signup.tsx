@@ -1,4 +1,3 @@
-import LottieImage from "@/components/shared/LottieImage";
 import { SignupForm } from "@/components/shared/auth/Signupform";
 import { SigninForm } from "@/components/shared/auth/SigninForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,7 +21,6 @@ const Signup = () => {
 					<SigninForm />
 				</TabsContent>
 			</Tabs>
-			<LottieImage />
 		</div>
 	);
 };

@@ -6,16 +6,19 @@ import type { language } from "@/constants";
 import { languages, snippetDefaultValues } from "@/constants";
 import { SnippetSchema } from "@/lib/snippetSchema/SnippetFom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import "ace-builds/src-noconflict/mode-javascript";
 import AceEditor from "react-ace";
 import { useForm } from "react-hook-form";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/ext-language_tools";
 import { z } from "zod";
 import { Button } from "../ui/button";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Snippetform = () => {
 	const queryClient = useQueryClient();
@@ -43,7 +46,7 @@ const Snippetform = () => {
 		},
 		onSuccess: () => {
 			toast.success("Snippet added successfully");
-			setIsOpen(false);
+			// setIsOpen(false);
 			queryClient.invalidateQueries({
 				queryKey: ["GetAllSnippets"],
 			});
@@ -130,12 +133,13 @@ const Snippetform = () => {
 													<AceEditor
 														placeholder="Code"
 														width="100%"
-														mode={form.getValues("language")}
+														mode="javascript"
 														theme="monokai"
 														name="code"
 														onChange={field.onChange}
 														fontSize={16}
 														lineHeight={24}
+														showPrintMargin={true}
 														showGutter={true}
 														wrapEnabled={true}
 														highlightActiveLine={true}

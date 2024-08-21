@@ -9,7 +9,7 @@ const AuthProvider = () => {
 	}
 
 	if (!user) {
-		return <Navigate to="auth/sign-up" />;
+		return <Navigate to="auth" replace />;
 	}
 
 	if (user.emailVerified === false) {
