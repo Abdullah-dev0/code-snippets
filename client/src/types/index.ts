@@ -11,8 +11,10 @@ export interface User {
 
 export interface Snippet {
 	id: string;
+	userid: string;
 	title: string;
 	language: string;
 	description: string;
 	code: string;
+	createdAt: string;
 }

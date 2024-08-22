@@ -1,37 +1,53 @@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import type { language } from "@/constants";
 import { languages, snippetDefaultValues } from "@/constants";
 import { SnippetSchema } from "@/lib/snippetSchema/SnippetFom";
+import { Snippet } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AceEditor from "react-ace";
-import { useForm } from "react-hook-form";
+import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-monokai";
-import "ace-builds/src-noconflict/ext-language_tools";
+import axios from "axios";
+import { Edit2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { toast } from "sonner";
-import axios from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+interface SnippetformProps {
+	snippet?: Snippet;
+	type: "create" | "update";
+}
 
-const Snippetform = () => {
+const Snippetform = ({ snippet, type }: SnippetformProps) => {
 	const queryClient = useQueryClient();
 	const [isOpen, setIsOpen] = useState(false);
 	const form = useForm<z.infer<typeof SnippetSchema>>({
 		resolver: zodResolver(SnippetSchema),
-		defaultValues: snippetDefaultValues,
+		defaultValues: snippet && type === "update" ? snippet : snippetDefaultValues,
 	});
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (values: z.infer<typeof SnippetSchema>) => {
-			const response = await axios.post("/api/create", values);
-			return response.data;
+			form.reset();
+			if (type === "update") {
+				// Update existing snippet
+				const response = await axios.put("/api/update", {
+					...values,
+					id: snippet?.id,
+				});
+				return response.data;
+			} else {
+				const response = await axios.post("/api/create", values);
+				return response.data;
+			}
 		},
 		onError: (error: any) => {
 			if (axios.isAxiosError(error)) {
@@ -45,8 +61,8 @@ const Snippetform = () => {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Snippet added successfully");
-			// setIsOpen(false);
+			toast.success(type === "update" ? "Snippet updated successfully" : "Snippet added successfully");
+			setIsOpen(false);
 			queryClient.invalidateQueries({
 				queryKey: ["GetAllSnippets"],
 			});
@@ -56,115 +72,118 @@ const Snippetform = () => {
 	return (
 		<Sheet open={isOpen} onOpenChange={setIsOpen}>
 			<SheetTrigger asChild>
-				<Button onClick={() => setIsOpen(true)}>Create</Button>
+				{type === "update" ? (
+					<Edit2 className="w-5 h-5 cursor-pointer" />
+				) : (
+					<Button onClick={() => setIsOpen(true)}>Create</Button>
+				)}
 			</SheetTrigger>
 			<SheetContent className="md:min-w-[600px] w-full overflow-y-scroll">
-				<SheetHeader className="space-y-6">
-					<div className="flex flex-col gap-2">
-						<h1 className="text-2xl">Create Snippet</h1>
-						<p className="text-sm">And share with your friends</p>
-					</div>
-					<SheetDescription className="mt-12">
-						<Form {...form}>
-							<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-8">
-								<FormField
-									disabled={isPending}
-									control={form.control}
-									name="title"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Title</FormLabel>
-											<FormControl>
-												<Input placeholder="Title" {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="language"
-									disabled={isPending}
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Select Language</FormLabel>
-											<FormControl>
-												<Select onValueChange={field.onChange}>
-													<SelectTrigger>
-														<SelectValue placeholder="language" />
-													</SelectTrigger>
-													<SelectContent>
-														{languages.map((language: language) => (
-															<SelectItem key={language} value={language}>
-																{language}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="description"
-									disabled={isPending}
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Description</FormLabel>
-											<FormControl>
-												<Textarea placeholder="Description" {...field} />
-											</FormControl>
-											<FormDescription>Describe your snippet in 300 characters or less.</FormDescription>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<FormField
-									control={form.control}
-									name="code"
-									disabled={isPending}
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Code</FormLabel>
-											<FormControl>
-												<div className="overflow-hidden">
-													<AceEditor
-														placeholder="Code"
-														width="100%"
-														mode="javascript"
-														theme="monokai"
-														name="code"
-														onChange={field.onChange}
-														fontSize={16}
-														lineHeight={24}
-														showPrintMargin={true}
-														showGutter={true}
-														wrapEnabled={true}
-														highlightActiveLine={true}
-														value={field.value}
-														setOptions={{
-															enableBasicAutocompletion: true,
-															enableLiveAutocompletion: true,
-															enableSnippets: true,
-															showLineNumbers: true,
-															tabSize: 0,
-														}}
-													/>
-												</div>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-								<Button disabled={isPending} type="submit">
-									{isPending ? "Loading..." : "Submit"}
-								</Button>
-							</form>
-						</Form>
-					</SheetDescription>
+				<SheetHeader>
+					<SheetTitle>Create a new snippet</SheetTitle>
+					<SheetDescription>And share with your friends</SheetDescription>
 				</SheetHeader>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-8">
+						<FormField
+							disabled={isPending}
+							control={form.control}
+							name="title"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Title</FormLabel>
+									<FormControl>
+										<Input placeholder="Title" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="language"
+							disabled={isPending}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Select Language</FormLabel>
+									<FormControl>
+										<Select
+											defaultValue={type === "update" ? snippet?.language || "" : ""}
+											onValueChange={field.onChange}>
+											<SelectTrigger>
+												<SelectValue placeholder="language" />
+											</SelectTrigger>
+											<SelectContent>
+												{languages.map((language: language) => (
+													<SelectItem key={language} value={language}>
+														{language}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="description"
+							disabled={isPending}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Description</FormLabel>
+									<FormControl>
+										<Textarea placeholder="Description" {...field} />
+									</FormControl>
+									<FormDescription>Describe your snippet in 1000 characters or less.</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="code"
+							disabled={isPending}
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Code</FormLabel>
+									<FormControl>
+										<div className="overflow-hidden">
+											<AceEditor
+												defaultValue={type === "update" ? snippet?.code || "" : ""}
+												placeholder="Code"
+												width="100%"
+												mode="javascript"
+												theme="monokai"
+												name="code"
+												onChange={field.onChange}
+												fontSize={16}
+												lineHeight={24}
+												showPrintMargin={true}
+												showGutter={true}
+												wrapEnabled={true}
+												highlightActiveLine={true}
+												value={field.value}
+												setOptions={{
+													enableBasicAutocompletion: true,
+													enableLiveAutocompletion: true,
+													enableSnippets: true,
+													showLineNumbers: true,
+													tabSize: 0,
+												}}
+											/>
+										</div>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button disabled={isPending} type="submit">
+							{isPending ? "Loading..." : type === "update" ? "Update" : "Create"}
+						</Button>
+					</form>
+				</Form>
 			</SheetContent>
 		</Sheet>
 	);

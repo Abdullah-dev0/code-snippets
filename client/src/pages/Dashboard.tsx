@@ -14,7 +14,7 @@ const Dashboard = () => {
 			{data?.map((snippet: Snippet) => (
 				<Card key={snippet.id} snippet={snippet} />
 			))}
-			<Snippetform />
+			<Snippetform type="create" />
 		</div>
 	);
 };

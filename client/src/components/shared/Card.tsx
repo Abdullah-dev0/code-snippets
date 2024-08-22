@@ -5,12 +5,11 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import AddFavorite from "./AddFavorite";
 import DeleteSnippet from "./DeleteSnippet";
+import Edit from "./Edit";
 
 interface CardProps {
 	snippet: Snippet;
 }
-
-SyntaxHighlighter.supportedLanguages;
 
 export const Card = ({ snippet }: CardProps) => {
 	const { theme } = useTheme();
@@ -30,9 +29,12 @@ const Header = ({ snippet }: CardProps) => {
 		<header className="flex flex-col gap-3">
 			<div className="flex justify-between">
 				<h1 className="text-md font-bold">{snippet.title}</h1>
-				<AddFavorite />
+				<div className="flex gap-3 items-center">
+					<AddFavorite />
+					<Edit snippet={snippet} />
+				</div>
 			</div>
-			{/* <p>{new Date(snippet.createdAt).toLocaleDateString()}</p> */}
+			<p>{new Date(snippet.createdAt).getDate()}</p>
 			<p>{snippet.description}</p>
 		</header>
 	);

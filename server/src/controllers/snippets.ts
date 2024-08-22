@@ -39,6 +39,9 @@ export const getAllSnippets = async (req: Request, res: Response) => {
 			where: {
 				userId: user?.id,
 			},
+			orderBy: {
+				createdAt: "desc",
+			},
 		});
 
 		if (snippets.length === 0) {

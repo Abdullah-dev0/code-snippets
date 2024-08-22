@@ -1,11 +1,7 @@
 import { Heart } from "lucide-react";
 
 const AddFavorite = () => {
-	return (
-		<div>
-			<Heart className="cursor-pointer" />
-		</div>
-	);
+	return <Heart className="cursor-pointer" />;
 };
 
 export default AddFavorite;
