@@ -13,8 +13,8 @@ export const useCurrentUser = () => {
 				throw error;
 			}
 		},
-		staleTime: 1000 * 60 * 10,
-		gcTime: 1000 * 60 * 60,
+		staleTime: 1000 * 60 * 15,
+		gcTime: 1000 * 60 * 60, // Garbage collection time
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		retry: (failureCount, error: any) => {

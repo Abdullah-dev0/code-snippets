@@ -38,7 +38,6 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 		mutationFn: async (values: z.infer<typeof SnippetSchema>) => {
 			form.reset();
 			if (type === "update") {
-				// Update existing snippet
 				const response = await axios.put("/api/update", {
 					...values,
 					id: snippet?.id,
@@ -171,6 +170,7 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 													enableSnippets: true,
 													showLineNumbers: true,
 													tabSize: 0,
+													highlightActiveLine: true,
 												}}
 											/>
 										</div>

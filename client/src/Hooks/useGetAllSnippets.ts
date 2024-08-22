@@ -13,7 +13,7 @@ export const useGetAllSnippets = () => {
 				throw error;
 			}
 		},
-
+		staleTime: 1000 * 60 * 15,
 		gcTime: 1000 * 60 * 60,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
