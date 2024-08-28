@@ -1,5 +1,3 @@
-import { useTheme } from "@/providers/theme-provider";
-// Lazy load the SyntaxHighlighter component
 import { Snippet } from "@/types";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -12,12 +10,11 @@ interface CardProps {
 }
 
 export const Card = ({ snippet }: CardProps) => {
-	const { theme } = useTheme();
-
+	console.log("Card component rendered");
 	return (
 		<div className="p-3 flex flex-col gap-4 h-full ">
 			<Header snippet={snippet} />
-			<CodeBlock theme={theme} snippet={snippet} />
+			<CodeBlock snippet={snippet} />
 			<Footer snippet={snippet} />
 		</div>
 	);
@@ -34,14 +31,14 @@ const Header = ({ snippet }: CardProps) => {
 					<Edit snippet={snippet} />
 				</div>
 			</div>
-			<p>{new Date(snippet.createdAt).getDate()}</p>
+			<p>{new Date(snippet.createdAt).getDate().toLocaleString()}</p>
 			<p>{snippet.description}</p>
 		</header>
 	);
 };
 
 // CodeBlock Component
-const CodeBlock = ({ snippet }: { theme: "dark" | "light" | "system"; snippet: Snippet }) => {
+const CodeBlock = ({ snippet }: { snippet: Snippet }) => {
 	return (
 		<div className="overflow-hidden max-h-[260px] rounded-md text-sm flex-1">
 			<SyntaxHighlighter
@@ -59,7 +56,7 @@ const CodeBlock = ({ snippet }: { theme: "dark" | "light" | "system"; snippet: S
 // Footer Component
 const Footer = ({ snippet }: CardProps) => {
 	return (
-		<footer className="footer flex justify-between">
+		<footer className="flex justify-between">
 			<p>{snippet.language}</p>
 			<DeleteSnippet id={snippet.id} />
 		</footer>

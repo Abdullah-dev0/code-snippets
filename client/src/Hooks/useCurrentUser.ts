@@ -1,6 +1,7 @@
 import { User } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "sonner";
 
 export const useCurrentUser = () => {
 	const { isLoading, isError, data, error } = useQuery<User>({
@@ -10,7 +11,7 @@ export const useCurrentUser = () => {
 				const response = await axios.get("/api/getCurrentUser");
 				return response.data; // Return the data here
 			} catch (error: any) {
-				throw error;
+				toast.error(error.response.data.message);
 			}
 		},
 		staleTime: 1000 * 60 * 15,
