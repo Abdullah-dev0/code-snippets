@@ -53,7 +53,7 @@ const DeleteSnippet = ({ id }: DeleteSnippetProps) => {
 			<AlertDialogTrigger asChild>
 				<Trash2 className="cursor-pointer" />
 			</AlertDialogTrigger>
-			<AlertDialogContent>
+			<AlertDialogContent className="">
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 					<AlertDialogDescription>Move To Trash ?</AlertDialogDescription>

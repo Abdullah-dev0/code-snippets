@@ -34,6 +34,7 @@ export const addSnippet = async (req: Request, res: Response) => {
 
 export const getAllSnippets = async (req: Request, res: Response) => {
 	const { user } = res.locals;
+	
 	try {
 		const snippets = await prisma.snippet.findMany({
 			where: {

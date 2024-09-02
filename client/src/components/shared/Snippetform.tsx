@@ -36,7 +36,6 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (values: z.infer<typeof SnippetSchema>) => {
-			form.reset();
 			if (type === "update") {
 				const response = await axios.put("/api/update", {
 					...values,
@@ -56,11 +55,12 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 					toast.error("An unexpected error occurred. Please try again.");
 				}
 			} else {
-				toast.error("An unexpected error occurred. Please try again.");
+				toast.error("No changes made.");
 			}
 		},
 		onSuccess: () => {
 			toast.success(type === "update" ? "Snippet updated successfully" : "Snippet added successfully");
+			form.reset();
 			setIsOpen(false);
 			queryClient.invalidateQueries({
 				queryKey: ["GetAllSnippets"],
@@ -71,11 +71,20 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 	return (
 		<Sheet open={isOpen} onOpenChange={setIsOpen}>
 			<SheetTrigger asChild>
-				{type === "update" ? (
-					<Edit2 className="w-5 h-5 cursor-pointer" />
-				) : (
-					<Button onClick={() => setIsOpen(true)}>Create</Button>
-				)}
+				<Button
+					variant={type === "update" ? "ghost" : "default"}
+					onClick={() => {
+						form.reset();
+						setIsOpen(true);
+					}}>
+					{type === "update" ? (
+						<>
+							<Edit2 size={22} />
+						</>
+					) : (
+						"Create"
+					)}
+				</Button>
 			</SheetTrigger>
 			<SheetContent className="md:min-w-[600px] w-full overflow-y-scroll">
 				<SheetHeader>
@@ -156,7 +165,7 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 												mode="javascript"
 												theme="monokai"
 												name="code"
-												onChange={field.onChange}
+												onChange={(value) => field.onChange(value)}
 												fontSize={16}
 												lineHeight={24}
 												showPrintMargin={true}

@@ -1,6 +1,7 @@
 import { Snippet } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "sonner";
 
 export const useGetAllSnippets = () => {
 	const { isLoading, isError, data, error } = useQuery<Snippet[]>({
@@ -8,9 +9,15 @@ export const useGetAllSnippets = () => {
 		queryFn: async () => {
 			try {
 				const response = await axios.get("/api/getsnippets");
-				return response.data; // Return the data here
+				return response.data;
 			} catch (error: any) {
-				throw error;
+				if (axios.isAxiosError(error)) {
+					if (error.response?.status === 401) {
+						toast.error("Please login to continue.");
+					} else {
+						toast.error("An unexpected error occurred. Please try again.");
+					}
+				}
 			}
 		},
 		staleTime: 1000 * 60 * 15,

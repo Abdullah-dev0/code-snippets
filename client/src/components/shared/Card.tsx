@@ -31,7 +31,7 @@ const Header = ({ snippet }: CardProps) => {
 					<Edit snippet={snippet} />
 				</div>
 			</div>
-			<p>{new Date(snippet.createdAt).getDate().toLocaleString()}</p>
+			<p>{snippet.createdAt.toString().split("T")[0]}</p>
 			<p>{snippet.description}</p>
 		</header>
 	);
@@ -39,15 +39,16 @@ const Header = ({ snippet }: CardProps) => {
 
 // CodeBlock Component
 const CodeBlock = ({ snippet }: { snippet: Snippet }) => {
+	const code = snippet.code.substring(0, 280) + "  ...";
 	return (
-		<div className="overflow-hidden max-h-[260px] rounded-md text-sm flex-1">
+		<div className="rounded-md text-sm flex-1">
 			<SyntaxHighlighter
 				showLineNumbers
 				wrapLines
-				customStyle={{ padding: "10px" }}
+				customStyle={{ padding: "10px", maxHeight: "350px" }}
 				language="javascript"
 				style={a11yDark}>
-				{snippet.code}
+				{code}
 			</SyntaxHighlighter>
 		</div>
 	);

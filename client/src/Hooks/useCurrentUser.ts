@@ -11,7 +11,13 @@ export const useCurrentUser = () => {
 				const response = await axios.get("/api/getCurrentUser");
 				return response.data; // Return the data here
 			} catch (error: any) {
-				toast.error(error.response.data.message);
+				if (axios.isAxiosError(error)) {
+					if (error.response?.status === 401) {
+						toast.error("Please login to continue.");
+					} else {
+						toast.error("An unexpected error occurred. Please try again.");
+					}
+				}
 			}
 		},
 		staleTime: 1000 * 60 * 15,
