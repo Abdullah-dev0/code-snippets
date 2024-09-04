@@ -9,7 +9,7 @@ export const useCurrentUser = () => {
 		queryFn: async () => {
 			try {
 				const response = await axios.get("/api/getCurrentUser");
-				return response.data; // Return the data here
+				return response.data;
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
 					if (error.response?.status === 401) {
@@ -20,7 +20,7 @@ export const useCurrentUser = () => {
 				}
 			}
 		},
-		staleTime: 1000 * 60 * 15,
+		staleTime: 1000 * 60 * 15, 
 		gcTime: 1000 * 60 * 60, // Garbage collection time
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
