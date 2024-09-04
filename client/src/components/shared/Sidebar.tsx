@@ -3,10 +3,13 @@ import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useState } from "react";
 
 const Sidebar = () => {
 	const Navigate = useNavigate();
+	const [loading, setLoading] = useState(false);
 	const handleLogout = async () => {
+		setLoading(true);
 		try {
 			const response = await axios.get("/api/auth/logout");
 			if (response.status === 200) {
@@ -21,6 +24,8 @@ const Sidebar = () => {
 			} else {
 				toast.error("An error occurred");
 			}
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -55,9 +60,10 @@ const Sidebar = () => {
 				<Button
 					variant={"ghost"}
 					onClick={handleLogout}
+					disabled={loading}
 					className="flex gap-4 hover:bg-purple-700 w-full justify-start p-6 text-xl items-center">
 					<img src="/src/public/logout.svg" className="h-6 w-6 dark:invert" alt="logout" />
-					Logout
+					{loading ? "Logging out..." : "Logout"}
 				</Button>
 			</div>
 		</aside>
