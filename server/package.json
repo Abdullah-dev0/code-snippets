@@ -4,9 +4,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -b",
-"start": "npx prisma migrate deploy && node dist/index.js",
-    "dev": "tsc -b  && tsx watch src/index.ts"
+    "build": "tsc -b ",
+    "start": "npx prisma migrate deploy && node dist/index.js",
+    "dev": "tsc -b && npx prisma migrate dev && tsx watch src/index.ts"
   },
   "keywords": [],
   "author": "",

@@ -53,6 +53,7 @@ CREATE TABLE "Snippet" (
     "language" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Snippet_pkey" PRIMARY KEY ("id")
 );

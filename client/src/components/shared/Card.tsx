@@ -3,12 +3,12 @@ import copy from "copy-to-clipboard";
 import { Copy } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import AddFavorite from "./AddFavorite";
 import DeleteSnippet from "./DeleteSnippet";
 import Edit from "./Edit";
-
 interface CardProps {
 	snippet: Snippet;
 }
@@ -47,7 +47,7 @@ const CodeBlock = ({ snippet }: { snippet: Snippet }) => {
 	if (snippet.code.length < 280) {
 		code = snippet.code;
 	} else {
-		code = snippet.code.substring(0, 280) + "  ...";
+		code = snippet.code.substring(0, 370) + "  ...";
 	}
 
 	const handleCopy = () => {

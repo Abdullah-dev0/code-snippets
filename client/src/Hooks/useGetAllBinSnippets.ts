@@ -1,14 +1,15 @@
-import { User } from "@/types";
+import { Snippet } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 
-export const useCurrentUser = () => {
-	const { isLoading, isError, data, error } = useQuery<User>({
-		queryKey: ["currentUser"],
+export const useGetBinSnippets = () => {
+	const { isLoading, isError, data, error } = useQuery<Snippet[]>({
+		queryKey: ["BinSnippets"],
+
 		queryFn: async () => {
 			try {
-				const response = await axios.get("/api/getCurrentUser");
+				const response = await axios.get(`/api/getsnippets?deleted=${true}`);
 				return response.data;
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
@@ -21,7 +22,7 @@ export const useCurrentUser = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 15,
-		gcTime: 1000 * 60 * 60, // Garbage collection time
+		gcTime: 1000 * 60 * 60,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		retry: (failureCount, error: any) => {
@@ -30,10 +31,8 @@ export const useCurrentUser = () => {
 			}
 			return failureCount < 1;
 		},
-		retryDelay: 2000, // Delay between retries
+		retryDelay: 2000,
 	});
 
-	const user = data?.user;
-
-	return { isLoading, isError, user, error };
+	return { isLoading, isError, data, error };
 };

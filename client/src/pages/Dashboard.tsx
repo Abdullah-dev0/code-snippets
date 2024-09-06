@@ -7,7 +7,7 @@ const Dashboard = () => {
 	const { data, isLoading } = useGetAllSnippets();
 
 	return (
-		<div className="grid md:grid-cols-2 gap-5 grid-cols-1">
+		<div className="grid lg:grid-cols-2 gap-5 grid-cols-1">
 			{isLoading && <div className="text-red text-4xl">Loading...</div>}
 			{data?.map((snippet: Snippet) => (
 				<Card key={snippet.id} snippet={snippet} />

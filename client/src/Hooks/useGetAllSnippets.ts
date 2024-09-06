@@ -6,9 +6,10 @@ import { toast } from "sonner";
 export const useGetAllSnippets = () => {
 	const { isLoading, isError, data, error } = useQuery<Snippet[]>({
 		queryKey: ["GetAllSnippets"],
+
 		queryFn: async () => {
 			try {
-				const response = await axios.get("/api/getsnippets");
+				const response = await axios.get(`/api/getsnippets?deleted=${false}`);
 				return response.data;
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
@@ -30,7 +31,7 @@ export const useGetAllSnippets = () => {
 			}
 			return failureCount < 1;
 		},
-		retryDelay: 2000, // Delay between retries
+		retryDelay: 2000,
 	});
 
 	return { isLoading, isError, data, error };

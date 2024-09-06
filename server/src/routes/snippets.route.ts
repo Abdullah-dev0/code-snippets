@@ -2,7 +2,13 @@
 
 import express from "express";
 
-import { addSnippet, deleteSnippetById, getAllSnippets, updateSnippetById } from "../controllers/snippets.js";
+import {
+	addSnippet,
+	deleteSnippetById,
+	getAllSnippets,
+	moveToBinOrRestore,
+	updateSnippetById,
+} from "../controllers/snippets.js";
 import { sessionManagementMiddleware } from "../middleware/auth.js";
 import { verifiedEmail } from "../middleware/verified.js";
 
@@ -14,4 +20,4 @@ snippetRouter.post("/create", addSnippet);
 snippetRouter.get("/getsnippets", getAllSnippets);
 snippetRouter.delete("/delete", deleteSnippetById);
 snippetRouter.put("/update", updateSnippetById);
-// snippetRouter.get("/getsnippet", getAllSnippets);
+snippetRouter.put("/snippet/action", moveToBinOrRestore);

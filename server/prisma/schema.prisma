@@ -11,8 +11,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
-  // directUrl = env("DATABASE_URL")
 }
 
 // Define your own datamodels here and run `npx prisma generate dev` to create
@@ -66,5 +64,6 @@ model Snippet {
   language    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

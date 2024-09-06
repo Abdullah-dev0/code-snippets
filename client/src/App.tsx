@@ -6,6 +6,7 @@ import Dashboard from "@/pages/Dashboard.tsx";
 import Signup from "@/pages/Signup.tsx";
 import AuthProvider from "./providers/AuthProvider";
 import Favorites from "@/pages/Favorites";
+import { Bin } from "./pages/Bin";
 
 export const App = () => {
 	return (
@@ -16,6 +17,7 @@ export const App = () => {
 					<Route element={<Layout />}>
 						<Route path="dashboard" element={<Dashboard />} />
 						<Route path="favorites" element={<Favorites />} />
+						<Route path="bin" element={<Bin />} />
 					</Route>
 				</Route>
 				<Route path="Otp-verification" element={<InputOTPForm />} />
