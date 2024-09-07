@@ -15,13 +15,13 @@ export const App = () => {
 				<Route path="/" element={<HomePage />} />
 				<Route element={<AuthProvider />}>
 					<Route element={<Layout />}>
-						<Route path="dashboard" element={<Dashboard />} />
+						<Route index element={<Dashboard />} />
 						<Route path="favorites" element={<Favorites />} />
 						<Route path="bin" element={<Bin />} />
 					</Route>
+					<Route path="auth" element={<Signup />} />
 				</Route>
 				<Route path="Otp-verification" element={<InputOTPForm />} />
-				<Route path="auth" element={<Signup />} />
 				<Route path="*" element={<div>404</div>} />
 			</Routes>
 		</Router>

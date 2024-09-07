@@ -10,15 +10,14 @@ export const useMoveToBinOrRestoreSnippet = () => {
 			const response = await axios.put("/api/snippet/action", { snippetId, action });
 			return response.data;
 		},
-		onSuccess: async ({ action }) => {
-			// const message = action === "delete" ? "Snippet moved to Bin successfully." : "Snippet restored successfully.";
+		onSettled: ({ action }) => {
+			console.log(action);
+			const message = action === "delete" ? "Snippet moved to Bin successfully." : "Snippet restored successfully.";
 
-			await queryClient.refetchQueries({ queryKey: ["BinSnippets"], type: "active" });
+			toast.success(message);
 
-			queryClient.invalidateQueries({ queryKey: ["BinSnippets"], type: "active" });
-
-			await queryClient.refetchQueries({ queryKey: ["GetAllSnippets"], type: "active" });
-			// toast.success(message);
+			queryClient.refetchQueries({ queryKey: ["binSnippets"] });
+			queryClient.refetchQueries({ queryKey: ["GetAllSnippets"] });
 		},
 		onError: () => {
 			toast.error("Failed to perform action. Please try again.");

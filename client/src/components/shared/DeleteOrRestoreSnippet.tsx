@@ -12,11 +12,11 @@ import {
 import { useMoveToBinOrRestoreSnippet } from "@/Hooks/useMoveToBinOrRestoreSnippet ";
 import { Trash2 } from "lucide-react";
 
-interface DeleteSnippetProps {
+interface DeleteOrRestoreSnippetProps {
 	id: string;
 }
 
-const DeleteSnippet = ({ id }: DeleteSnippetProps) => {
+const DeleteOrRestoreSnippet = ({ id }: DeleteOrRestoreSnippetProps) => {
 	const { mutation } = useMoveToBinOrRestoreSnippet();
 
 	return (
@@ -43,4 +43,4 @@ const DeleteSnippet = ({ id }: DeleteSnippetProps) => {
 	);
 };
 
-export default DeleteSnippet;
+export default DeleteOrRestoreSnippet;

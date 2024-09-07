@@ -2,10 +2,16 @@ import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import { Navigate, Outlet } from "react-router-dom";
 
 const AuthProvider = () => {
-	const { user, isLoading } = useCurrentUser();
+	const { user, isLoading, isError, isFetching } = useCurrentUser();
 
-	if (isLoading) {
-		return <div className="text-center">Loading...</div>; // You can replace this with a loader/spinner
+	console.log(user, "user in AuthProvider");
+
+	if (isLoading || isFetching) {
+		return <div className="text-center">Loading...</div>;
+	}
+
+	if (isError) {
+		return <Navigate to="auth" replace />;
 	}
 
 	if (!user) {

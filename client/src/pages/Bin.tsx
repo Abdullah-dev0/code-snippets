@@ -1,26 +1,17 @@
-import { useGetBinSnippets } from "@/Hooks/useGetAllBinSnippets";
+import { Card } from "@/components/shared/Card";
+import { useGetBinSnippets } from "@/Hooks/useGetAllSnippets";
+import { Snippet } from "@/types";
 
 export const Bin = () => {
-	const { isLoading, isError, data } = useGetBinSnippets();
+	const { data, isLoading, isFetching } = useGetBinSnippets();
 
-	if (isLoading) {
-		return <div>Loading...</div>;
+	if (isLoading || isFetching) {
+		return <div className="text-red text-4xl">Loading...</div>;
 	}
-
-	if (isError) {
-		return <div>Error...</div>;
-	}
-
-	if (!data || data.length === 0) {
-		return <div>No snippets in Bin</div>;
-	}
-
 	return (
-		<div>
-			{data.map((snippet) => (
-				<div key={snippet.id}>
-					<pre>{JSON.stringify(snippet, null, 2)}</pre>
-				</div>
+		<div className="grid lg:grid-cols-2 gap-5 grid-cols-1">
+			{data?.map((snippet: Snippet) => (
+				<Card type="bin" key={snippet.id} snippet={snippet} />
 			))}
 		</div>
 	);
