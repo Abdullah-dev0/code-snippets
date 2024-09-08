@@ -27,6 +27,7 @@ model User {
   Account               Account[]
   emailVerificationCode emailVerificationCode?
   Snippet               Snippet[]
+  favorite              favorite[]
 }
 
 model Account {
@@ -56,14 +57,23 @@ model Session {
 }
 
 model Snippet {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   userId      String
   title       String
   description String
   code        String
   language    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deleted     Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deleted     Boolean    @default(false)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favorite    favorite[]
+}
+
+model favorite {
+  id        String   @id @default(cuid())
+  userId    String?
+  snippetId String?
+  User      User?    @relation(fields: [userId], references: [id])
+  Snippet   Snippet? @relation(fields: [snippetId], references: [id])
 }

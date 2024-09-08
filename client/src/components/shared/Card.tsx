@@ -1,22 +1,20 @@
 import { Snippet } from "@/types";
 import copy from "copy-to-clipboard";
-import { Copy, CopyCheck, ArchiveRestore } from "lucide-react";
+import { Copy, CopyCheck } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AddFavorite from "./AddFavorite";
 import DeleteOrRestoreSnippet from "./DeleteOrRestoreSnippet";
 import Edit from "./Edit";
-import { useEffect, useState } from "react";
-import { useMoveToBinOrRestoreSnippet } from "@/Hooks/useMoveToBinOrRestoreSnippet ";
 interface CardProps {
 	snippet: Snippet;
 	type?: "bin" | "dashboard";
 }
 
 export const Card = ({ snippet, type }: CardProps) => {
-	console.log("Card component rendered");
 	return (
 		<div className="p-3 flex flex-col gap-4 h-full justify-center ">
 			<Header type={type} snippet={snippet} />
@@ -28,8 +26,6 @@ export const Card = ({ snippet, type }: CardProps) => {
 
 // Header Component
 const Header = ({ snippet, type }: CardProps) => {
-	console.log(type);
-	const { mutation } = useMoveToBinOrRestoreSnippet();
 	return (
 		<header className="flex flex-col gap-3">
 			<div className="flex justify-between">
@@ -40,12 +36,7 @@ const Header = ({ snippet, type }: CardProps) => {
 						<Edit snippet={snippet} />
 					</div>
 				) : (
-					<ArchiveRestore
-						onClick={() => {
-							mutation.mutate({ snippetId: snippet.id, action: "restore" });
-						}}
-						className="cursor-pointer"
-					/>
+					<DeleteOrRestoreSnippet type="restore" id={snippet.id} />
 				)}
 			</div>
 			<p>{snippet.createdAt.toString().split("T")[0]}</p>
@@ -107,7 +98,7 @@ const Footer = ({ snippet, type }: CardProps) => {
 	return (
 		<footer className="flex justify-between">
 			<p>{snippet.language}</p>
-			{type === "dashboard" && <DeleteOrRestoreSnippet id={snippet.id} />}
+			{type === "dashboard" && <DeleteOrRestoreSnippet id={snippet.id} type="bin" />}
 		</footer>
 	);
 };

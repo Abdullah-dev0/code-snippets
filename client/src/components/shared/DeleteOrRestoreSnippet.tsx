@@ -10,32 +10,50 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useMoveToBinOrRestoreSnippet } from "@/Hooks/useMoveToBinOrRestoreSnippet ";
-import { Trash2 } from "lucide-react";
+import { ArchiveRestore, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 interface DeleteOrRestoreSnippetProps {
 	id: string;
+	type?: "bin" | "restore";
 }
 
-const DeleteOrRestoreSnippet = ({ id }: DeleteOrRestoreSnippetProps) => {
+const DeleteOrRestoreSnippet = ({ id, type }: DeleteOrRestoreSnippetProps) => {
 	const { mutation } = useMoveToBinOrRestoreSnippet();
+	const [loading, setLoading] = useState(false);
+	const [open, setOpen] = useState(false);
+
+	const handleAction = () => {
+		setLoading(true);
+		mutation.mutate(
+			{ snippetId: id, action: type === "restore" ? "restore" : "delete" },
+			{
+				onSettled: () => {
+					setLoading(false);
+					setOpen(false);
+				},
+			},
+		);
+	};
 
 	return (
-		<AlertDialog>
+		<AlertDialog open={open} onOpenChange={setOpen}>
 			<AlertDialogTrigger asChild>
-				<Trash2 className="cursor-pointer" />
+				{type === "bin" ? <Trash2 className="cursor-pointer" /> : <ArchiveRestore className="cursor-pointer" />}
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-					<AlertDialogDescription>Move To Trash?</AlertDialogDescription>
+					<AlertDialogDescription>
+						{type === "restore"
+							? "Are you sure you want to restore this snippet?"
+							: "Are you sure you want to move this snippet to trash?"}
+					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction
-						onClick={() => {
-							mutation.mutate({ snippetId: id, action: "delete" });
-						}}>
-						Move to Trash
+					<AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+					<AlertDialogAction onClick={handleAction} disabled={loading}>
+						{loading ? "Processing..." : type === "restore" ? "Restore" : "Delete"}
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

@@ -5,7 +5,7 @@ import { Snippet } from "@/types";
 
 const Dashboard = () => {
 	const { data, isLoading, isFetching } = useGetAllSnippets();
-	console.log("dashboard", data);
+
 	if (isLoading || isFetching) {
 		return <div className="text-red text-4xl">Loading...</div>;
 	}

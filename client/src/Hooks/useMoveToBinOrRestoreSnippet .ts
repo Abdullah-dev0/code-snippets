@@ -8,10 +8,9 @@ export const useMoveToBinOrRestoreSnippet = () => {
 	const mutation = useMutation({
 		mutationFn: async ({ snippetId, action }: { snippetId: string; action: "delete" | "restore" }) => {
 			const response = await axios.put("/api/snippet/action", { snippetId, action });
-			return response.data;
+			return { data: response.data, action };
 		},
-		onSettled: ({ action }) => {
-			console.log(action);
+		onSuccess: ({ action }) => {
 			const message = action === "delete" ? "Snippet moved to Bin successfully." : "Snippet restored successfully.";
 
 			toast.success(message);
