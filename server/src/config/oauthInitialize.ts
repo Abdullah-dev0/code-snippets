@@ -22,5 +22,5 @@ export const googleAuth = new Google(
 
 	//please change this to your own callback url
 
-	`http://localhost:5173/api/login/google/callback`,
+	`http://localhost:4173/api/login/google/callback`,
 );

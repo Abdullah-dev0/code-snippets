@@ -10,6 +10,11 @@ export const emailVerification = async (req: Request, res: Response) => {
 	if (res.locals.user?.emailVerified) {
 		return res.status(400).json({ error: "Email is already verified" });
 	}
+
+	if (!res.locals.user) {
+		return res.status(404).json({ error: "Please Login" });
+	}
+
 	try {
 		// Extract and validate the verification code from the request body
 		const code: string = req.body.pin;
@@ -61,6 +66,10 @@ export const emailVerification = async (req: Request, res: Response) => {
 
 export const resendVerification = async (req: Request, res: Response) => {
 	const { user } = res.locals;
+
+	if (!res.locals.user) {
+		return res.status(404).json({ error: "Please Login" });
+	}
 
 	if (res.locals.user?.emailVerified) {
 		return res.status(400).json({ error: "Email is already verified" });

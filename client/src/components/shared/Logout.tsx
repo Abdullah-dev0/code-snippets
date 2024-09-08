@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { Button } from "../ui/button";
-import { toast } from "sonner";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 const Logout = () => {
 	const Navigate = useNavigate();

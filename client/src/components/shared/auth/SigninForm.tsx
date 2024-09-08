@@ -39,7 +39,7 @@ export function SigninForm() {
 		},
 
 		onSuccess: () => {
-			toast.success("Sign in successful.");
+			toast.success("Sign in successfull.");
 			Navigate("/dashboard", { replace: true });
 		},
 	});

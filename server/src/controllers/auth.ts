@@ -142,6 +142,8 @@ export const githubLogin = async (req: Request, res: Response) => {
 		scopes: ["user:email"],
 	});
 
+	console.log(url);
+
 	res
 		.status(302)
 		.appendHeader(
