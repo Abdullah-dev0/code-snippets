@@ -14,7 +14,7 @@ export const useGetAllSnippets = () => {
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
 					if (error.response?.status === 401) {
-						toast.error("Please login to continue.");
+						throw new Error("Unauthorized");
 					} else {
 						toast.error("An unexpected error occurred. Please try again.");
 					}
@@ -47,7 +47,7 @@ export const useGetBinSnippets = () => {
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
 					if (error.response?.status === 401) {
-						toast.error("Please login to continue.");
+						throw new Error("Unauthorized");
 					} else {
 						toast.error("An unexpected error occurred. Please try again.");
 					}

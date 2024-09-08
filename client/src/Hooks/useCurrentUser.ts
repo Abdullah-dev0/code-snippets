@@ -25,13 +25,7 @@ export const useCurrentUser = () => {
 		gcTime: 1000 * 60 * 60, // Garbage collection time
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-		retry: (failureCount, error: any) => {
-			if (error?.response?.status === 401) {
-				return false;
-			}
-			return failureCount < 1;
-		},
-		retryDelay: 2000, // Delay between retries
+		retry: false,
 	});
 
 	const user = data?.user;

@@ -40,7 +40,7 @@ export function SigninForm() {
 
 		onSuccess: () => {
 			toast.success("Sign in successful.");
-			Navigate("/dashboard");
+			Navigate("/dashboard", { replace: true });
 		},
 	});
 

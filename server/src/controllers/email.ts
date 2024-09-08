@@ -7,6 +7,9 @@ import { sendVerificationCode } from "../utils/email/sendVerificationCode.js";
 import { verifyVerificationCode } from "../utils/email/verifyVerificationCode.js";
 
 export const emailVerification = async (req: Request, res: Response) => {
+	if (res.locals.user?.emailVerified) {
+		return res.status(400).json({ error: "Email is already verified" });
+	}
 	try {
 		// Extract and validate the verification code from the request body
 		const code: string = req.body.pin;
@@ -59,7 +62,9 @@ export const emailVerification = async (req: Request, res: Response) => {
 export const resendVerification = async (req: Request, res: Response) => {
 	const { user } = res.locals;
 
-	// Find the user's email verification code
+	if (res.locals.user?.emailVerified) {
+		return res.status(400).json({ error: "Email is already verified" });
+	}
 
 	const existingUser = await prisma.user.findFirst({
 		where: {
@@ -73,7 +78,6 @@ export const resendVerification = async (req: Request, res: Response) => {
 
 	const verificationCode = await generateEmailVerificationCode(existingUser.id, existingUser.email!);
 
-	
 	const sentVerificationCode = await sendVerificationCode(existingUser.email!, verificationCode);
 
 	// Respond with success

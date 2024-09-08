@@ -1,7 +1,6 @@
-import { SignupForm } from "@/components/shared/auth/Signupform";
 import { SigninForm } from "@/components/shared/auth/SigninForm";
+import { SignupForm } from "@/components/shared/auth/Signupform";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 const Signup = () => {
 	return (
 		<div className="flex h-screen placecenter w-full">

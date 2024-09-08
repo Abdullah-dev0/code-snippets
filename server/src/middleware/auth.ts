@@ -11,6 +11,8 @@ export function originVerificationMiddleware(req: Request, res: Response, next: 
 	}
 	const originHeader = req.headers.origin ?? null;
 	const hostHeader = req.headers.host ?? null;
+
+	
 	if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, [hostHeader])) {
 		return res.status(403).end();
 	}

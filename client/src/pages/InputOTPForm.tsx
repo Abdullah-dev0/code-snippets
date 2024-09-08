@@ -1,3 +1,4 @@
+import Logout from "@/components/shared/Logout";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
@@ -51,7 +52,7 @@ export function InputOTPForm() {
 		onSuccess: (response) => {
 			if (response.status === 200) {
 				toast.success("Email Verified Successfully");
-				Navigate("/dashboard");
+				Navigate("/dashboard", { replace: true });
 			}
 		},
 	});
@@ -81,46 +82,49 @@ export function InputOTPForm() {
 	}
 
 	return (
-		<div className="flex items-center justify-center h-screen w-full">
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-6 text-center">
-					<FormField
-						control={form.control}
-						disabled={isPending}
-						name="pin"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>One-Time Code</FormLabel>
-								<FormControl>
-									<InputOTP maxLength={4} size={4} {...field} pattern={REGEXP_ONLY_DIGITS}>
-										<InputOTPGroup className="mx-auto">
-											<InputOTPSlot index={0} />
-											<InputOTPSlot index={1} />
-											<InputOTPSeparator />
-											<InputOTPSlot index={2} />
-											<InputOTPSlot index={3} />
-										</InputOTPGroup>
-									</InputOTP>
-								</FormControl>
-								<FormDescription>Please Enter Verification code Sent to your Email</FormDescription>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<p>
-						{isRunning ? (
-							`Code Expires in  ${seconds}s`
-						) : (
-							<Button onClick={(e) => handleSubmit(e)} disabled={loading}>
-								{loading ? "Sending..." : "Resend Code"}
-							</Button>
-						)}
-					</p>
-					<Button type="submit" className="w-full" disabled={isPending}>
-						{isPending ? "Verifying..." : "Verify"}
-					</Button>
-				</form>
-			</Form>
-		</div>
+		<>
+			<Logout />
+			<div className="flex items-center justify-center h-screen w-full">
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit((values) => mutate(values))} className="space-y-6 text-center">
+						<FormField
+							control={form.control}
+							disabled={isPending}
+							name="pin"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>One-Time Code</FormLabel>
+									<FormControl>
+										<InputOTP maxLength={4} size={4} {...field} pattern={REGEXP_ONLY_DIGITS}>
+											<InputOTPGroup className="mx-auto">
+												<InputOTPSlot index={0} />
+												<InputOTPSlot index={1} />
+												<InputOTPSeparator />
+												<InputOTPSlot index={2} />
+												<InputOTPSlot index={3} />
+											</InputOTPGroup>
+										</InputOTP>
+									</FormControl>
+									<FormDescription>Please Enter Verification code Sent to your Email</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<p>
+							{isRunning ? (
+								`Code Expires in  ${seconds}s`
+							) : (
+								<Button onClick={(e) => handleSubmit(e)} disabled={loading}>
+									{loading ? "Sending..." : "Resend Code"}
+								</Button>
+							)}
+						</p>
+						<Button type="submit" className="w-full" disabled={isPending}>
+							{isPending ? "Verifying..." : "Verify"}
+						</Button>
+					</form>
+				</Form>
+			</div>
+		</>
 	);
 }

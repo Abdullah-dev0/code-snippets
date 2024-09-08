@@ -1,34 +1,8 @@
 import { navLinks } from "@/constants";
-import axios from "axios";
-import { NavLink, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import Logout from "./Logout";
 
 const Sidebar = () => {
-	const Navigate = useNavigate();
-	const [loading, setLoading] = useState(false);
-	const handleLogout = async () => {
-		setLoading(true);
-		try {
-			const response = await axios.get("/api/auth/logout");
-			if (response.status === 200) {
-				toast.success("Logged out successfully");
-				Navigate("auth");
-			}
-		} catch (error: any) {
-			if (axios.isAxiosError(error)) {
-				if (error.response?.data) {
-					toast.error(error.response.data.error);
-				}
-			} else {
-				toast.error("An error occurred");
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	return (
 		<aside className="min-w-60  fixed left-0 h-screen shadow-lg dark:shadow-slate-900 hidden lg:block">
 			<div className="flex justify-center items-center gap-3 p-5 mt-5">
@@ -57,14 +31,7 @@ const Sidebar = () => {
 			</ul>
 
 			<div className="mt-12 w-full p-3">
-				<Button
-					variant={"ghost"}
-					onClick={handleLogout}
-					disabled={loading}
-					className="flex gap-4 hover:bg-purple-700 w-full justify-start p-6 text-xl items-center">
-					<img src="/src/public/logout.svg" className="h-6 w-6 dark:invert" alt="logout" />
-					{loading ? "Logging out..." : "Logout"}
-				</Button>
+				<Logout />
 			</div>
 		</aside>
 	);

@@ -1,28 +1,31 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "@/layout.tsx";
-import { InputOTPForm } from "@/pages/InputOTPForm";
-import HomePage from "@/pages/Home.tsx";
+import { Bin } from "@/pages/Bin";
 import Dashboard from "@/pages/Dashboard.tsx";
-import Signup from "@/pages/Signup.tsx";
-import AuthProvider from "./providers/AuthProvider";
 import Favorites from "@/pages/Favorites";
-import { Bin } from "./pages/Bin";
+import HomePage from "@/pages/Home.tsx";
+import { InputOTPForm } from "@/pages/InputOTPForm";
+import Signup from "@/pages/Signup.tsx";
+import AuthProvider from "@/providers/AuthProvider";
+import ProtectedRoutes from "@/providers/ProtectedRoutes";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 export const App = () => {
 	return (
 		<Router>
 			<Routes>
-				<Route path="/" element={<HomePage />} />
+				<Route index element={<HomePage />} />
+				<Route element={<ProtectedRoutes />}>
+					<Route path="auth" element={<Signup />} />
+					<Route path="Otp-verification" element={<InputOTPForm />} />
+				</Route>
 				<Route element={<AuthProvider />}>
 					<Route element={<Layout />}>
-						<Route index element={<Dashboard />} />
+						<Route path="dashboard" element={<Dashboard />} />
 						<Route path="favorites" element={<Favorites />} />
 						<Route path="bin" element={<Bin />} />
 					</Route>
-					<Route path="auth" element={<Signup />} />
 				</Route>
-				<Route path="Otp-verification" element={<InputOTPForm />} />
-				<Route path="*" element={<div>404</div>} />
+				<Route path="*" element={<div>404 - Not Found</div>} />
 			</Routes>
 		</Router>
 	);

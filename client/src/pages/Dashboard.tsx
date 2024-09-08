@@ -5,10 +5,11 @@ import { Snippet } from "@/types";
 
 const Dashboard = () => {
 	const { data, isLoading, isFetching } = useGetAllSnippets();
-
+	console.log("dashboard", data);
 	if (isLoading || isFetching) {
 		return <div className="text-red text-4xl">Loading...</div>;
 	}
+
 	return (
 		<div className="grid lg:grid-cols-2 gap-5 grid-cols-1">
 			{data?.map((snippet: Snippet) => (
