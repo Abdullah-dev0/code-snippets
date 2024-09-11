@@ -59,11 +59,68 @@ export const moveToBinOrRestore = async (req: Request, res: Response) => {
 			data: { deleted: action === "delete" ? true : false },
 		});
 
+		if (!updatedSnippet) {
+			res.status(400).json({ error: "There was an error while moving snippet to bin" }).end();
+			console.log("Error updating snippet:");
+			return;
+		}
+
 		const message = action === "delete" ? "Snippet moved to Bin successfully" : "Snippet restored successfully";
 
 		return res.status(200).json({ message }).end();
 	} catch (error) {
 		console.log(`Error ${action === "delete" ? "deleting" : "restoring"} snippet:`, error);
+		return res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+export const addToFavoritesOrRemove = async (req: Request, res: Response) => {
+	const { snippetId } = req.body;
+	const { user } = res.locals;
+
+	try {
+		const snippet = await prisma.snippet.findUnique({
+			where: {
+				id: snippetId,
+			},
+		});
+
+		if (!snippet) {
+			return res.status(404).json({ error: "Snippet not found" });
+		}
+
+		const favorite = await prisma.favorite.findFirst({
+			where: {
+				snippetId: snippetId,
+				userId: user?.id,
+			},
+		});
+
+		if (favorite) {
+			await prisma.favorite.delete({
+				where: {
+					id: favorite.id,
+				},
+			});
+
+			return res.status(200).json({ message: "Snippet removed from favorites" }).end();
+		}
+
+		const response = await prisma.favorite.create({
+			data: {
+				snippetId: snippetId,
+				userId: user?.id,
+				isFavorite: true,
+			},
+		});
+
+		if (!response) {
+			return res.status(400).json({ error: "There was an error while adding to favorites" }).end();
+		}
+
+		return res.status(200).json({ message: "Snippet added to favorites" }).end();
+	} catch (error) {
+		console.log("Error adding to favorites:", error);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 };
@@ -150,26 +207,31 @@ export const updateSnippetById = async (req: Request, res: Response) => {
 	}
 };
 
-export const getSnippetById = async (req: Request, res: Response) => {
-	const { id } = req.params;
-
+export const getAllFavSnippets = async (req: Request, res: Response) => {
 	try {
-		const snippet = await prisma.snippet.findUnique({
+		const snippets = await prisma.favorite.findMany({
 			where: {
-				id: id,
+				userId: res.locals?.user?.id,
+			},
+
+			select: {
+				Snippet: true,
+				isFavorite: true,
 			},
 		});
 
-		if (!snippet) {
-			return res.status(404).json({ error: "Snippet not found" });
+		if (!snippets) {
+			return res.status(404).json({ error: "Snippets not found" });
 		}
 
-		return res
-			.status(200)
-			.json({
-				data: snippet,
-			})
-			.end();
+		const snippetsArray = snippets.map((item) => ({
+			...item.Snippet,
+			isFavorite: item.isFavorite,
+		}));
+
+		console.log(snippetsArray);
+
+		return res.status(200).json(snippetsArray).end();
 	} catch (error) {
 		console.log("Error getting snippet:", error);
 		return res.status(500).json({ error: "Internal server error" });

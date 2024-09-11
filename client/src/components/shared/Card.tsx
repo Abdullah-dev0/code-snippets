@@ -31,8 +31,8 @@ const Header = ({ snippet, type }: CardProps) => {
 			<div className="flex justify-between">
 				<h1 className="text-md font-bold">{snippet.title}</h1>
 				{type === "dashboard" ? (
-					<div className="flex gap-3 items-center">
-						<AddFavorite />
+					<div className="flex gap-2 items-center">
+						<AddFavorite snippetId={snippet.id} />
 						<Edit snippet={snippet} />
 					</div>
 				) : (

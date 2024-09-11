@@ -4,7 +4,9 @@ import express from "express";
 
 import {
 	addSnippet,
+	addToFavoritesOrRemove,
 	deleteSnippetById,
+	getAllFavSnippets,
 	getAllSnippets,
 	moveToBinOrRestore,
 	updateSnippetById,
@@ -21,3 +23,5 @@ snippetRouter.get("/getsnippets", getAllSnippets);
 snippetRouter.delete("/delete", deleteSnippetById);
 snippetRouter.put("/update", updateSnippetById);
 snippetRouter.put("/snippet/action", moveToBinOrRestore);
+snippetRouter.post("/addfavorite", addToFavoritesOrRemove);
+snippetRouter.get("/getfavorites", getAllFavSnippets);

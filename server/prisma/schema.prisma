@@ -71,9 +71,11 @@ model Snippet {
 }
 
 model favorite {
-  id        String   @id @default(cuid())
-  userId    String?
-  snippetId String?
-  User      User?    @relation(fields: [userId], references: [id])
-  Snippet   Snippet? @relation(fields: [snippetId], references: [id])
+  id         String   @id @default(cuid())
+  userId     String?
+  snippetId  String?
+  isFavorite Boolean
+  User       User?    @relation(fields: [userId], references: [id])
+  Snippet    Snippet? @relation(fields: [snippetId], references: [id])
+  timestamp  DateTime @default(now())
 }

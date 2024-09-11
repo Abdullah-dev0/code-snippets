@@ -8,6 +8,8 @@ export const Bin = () => {
 	if (isLoading || isFetching) {
 		return <div className="text-red text-4xl">Loading...</div>;
 	}
+
+	if (data?.length == 0) return <div className="text-red text-4xl">No snippets found.</div>;
 	return (
 		<div className="grid lg:grid-cols-2 gap-5 grid-cols-1">
 			{data?.map((snippet: Snippet) => (
