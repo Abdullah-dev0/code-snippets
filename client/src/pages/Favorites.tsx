@@ -9,8 +9,6 @@ const Favorites = () => {
 		return <div className="text-red text-4xl">Loading...</div>;
 	}
 
-	console.log(data, "data in Favorites.tsx");
-
 	if (data?.length === 0 || !data) return <div className="text-red text-4xl">No favorites found.</div>;
 
 	return (

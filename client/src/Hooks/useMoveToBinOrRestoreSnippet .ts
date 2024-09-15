@@ -1,3 +1,4 @@
+import { Snippet } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
@@ -17,6 +18,13 @@ export const useMoveToBinOrRestoreSnippet = () => {
 
 			queryClient.refetchQueries({ queryKey: ["binSnippets"] });
 			queryClient.refetchQueries({ queryKey: ["GetAllSnippets"] });
+
+			const favoriteSnippets = queryClient.getQueryData(["getFavoritesSnippets"]) as Snippet[];
+
+
+			if (favoriteSnippets.length !== 0) {
+				queryClient.refetchQueries({ queryKey: ["getFavoritesSnippets"] });
+			}
 		},
 		onError: () => {
 			toast.error("Failed to perform action. Please try again.");
