@@ -56,7 +56,6 @@ export const useGetBinSnippets = () => {
 		},
 
 		staleTime: 1000 * 60 * 10,
-		gcTime: 1000 * 60 * 4,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		retry: (failureCount, error: any) => {

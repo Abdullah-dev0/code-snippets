@@ -38,8 +38,6 @@ export const moveToBinOrRestore = async (req: Request, res: Response) => {
 	const { snippetId, action } = req.body; // action will be 'delete' or 'restore'
 	const { user } = res.locals;
 
-	console.log(action);
-
 	action === "delete" ? true : false;
 
 	try {
@@ -65,9 +63,9 @@ export const moveToBinOrRestore = async (req: Request, res: Response) => {
 			return;
 		}
 
-		const message = action === "delete" ? "Snippet moved to Bin successfully" : "Snippet restored successfully";
+		await prisma.favorite.deleteMany();
 
-		return res.status(200).json({ message }).end();
+		return res.status(200).end();
 	} catch (error) {
 		console.log(`Error ${action === "delete" ? "deleting" : "restoring"} snippet:`, error);
 		return res.status(500).json({ error: "Internal server error" });
@@ -149,24 +147,20 @@ export const getAllSnippets = async (req: Request, res: Response) => {
 	}
 };
 
-export const deleteSnippetById = async (req: Request, res: Response) => {
-	const { id } = req.body;
-
+export const deleteSnippetsById = async (req: Request, res: Response) => {
 	try {
-		const snippet = await prisma.snippet.delete({
+		await prisma.snippet.deleteMany({
 			where: {
-				id: id,
+				deleted: true,
 			},
 		});
 
-		if (!snippet) {
-			return res.status(404).json({ error: "Snippet not found" });
-		}
+		await prisma.favorite.deleteMany();
 
 		return res
 			.status(200)
 			.json({
-				message: "Snippet deleted successfully",
+				message: "All Snippets deleted successfully",
 			})
 			.end();
 	} catch (error) {
@@ -213,7 +207,6 @@ export const getAllFavSnippets = async (req: Request, res: Response) => {
 			where: {
 				userId: res.locals?.user?.id,
 			},
-
 			select: {
 				Snippet: true,
 				isFavorite: true,
@@ -221,15 +214,13 @@ export const getAllFavSnippets = async (req: Request, res: Response) => {
 		});
 
 		if (!snippets) {
-			return res.status(404).json({ error: "Snippets not found" });
+			return res.status(404).json({ error: "No favorite snippets found" }).end();
 		}
 
 		const snippetsArray = snippets.map((item) => ({
 			...item.Snippet,
 			isFavorite: item.isFavorite,
 		}));
-
-		console.log(snippetsArray);
 
 		return res.status(200).json(snippetsArray).end();
 	} catch (error) {

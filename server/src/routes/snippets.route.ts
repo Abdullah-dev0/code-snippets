@@ -5,7 +5,7 @@ import express from "express";
 import {
 	addSnippet,
 	addToFavoritesOrRemove,
-	deleteSnippetById,
+	deleteSnippetsById,
 	getAllFavSnippets,
 	getAllSnippets,
 	moveToBinOrRestore,
@@ -20,7 +20,7 @@ snippetRouter.use(sessionManagementMiddleware);
 snippetRouter.use(verifiedEmail);
 snippetRouter.post("/create", addSnippet);
 snippetRouter.get("/getsnippets", getAllSnippets);
-snippetRouter.delete("/delete", deleteSnippetById);
+snippetRouter.delete("/emptybin", deleteSnippetsById);
 snippetRouter.put("/update", updateSnippetById);
 snippetRouter.put("/snippet/action", moveToBinOrRestore);
 snippetRouter.post("/addfavorite", addToFavoritesOrRemove);

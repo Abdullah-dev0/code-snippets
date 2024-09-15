@@ -22,10 +22,8 @@ export const useCurrentUser = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 15,
-		gcTime: 1000 * 60 * 60, // Garbage collection time
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-		refetchIntervalInBackground: true,
 		retryOnMount: false,
 		retry: false,
 	});

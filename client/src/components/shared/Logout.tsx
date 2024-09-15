@@ -10,6 +10,8 @@ const Logout = () => {
 	const queryClient = useQueryClient();
 
 	const [loading, setLoading] = useState(false);
+
+
 	const handleLogout = async () => {
 		setLoading(true);
 		try {
@@ -17,7 +19,6 @@ const Logout = () => {
 			if (response.status === 200) {
 				toast.success("Logged out successfully");
 				queryClient.removeQueries();
-
 				Navigate("/auth", { replace: true });
 			}
 		} catch (error: any) {

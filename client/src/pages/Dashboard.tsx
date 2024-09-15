@@ -1,10 +1,13 @@
 import { Card } from "@/components/shared/Card";
 import Snippetform from "@/components/shared/Snippetform";
-import { useGetAllSnippets } from "@/Hooks/useGetAllSnippets";
+import { useGetAllSnippets, useGetBinSnippets } from "@/Hooks/useGetAllSnippets";
+import { useGetFavSnippet } from "@/Hooks/useGetFavSnippet";
 import { Snippet } from "@/types";
 
 const Dashboard = () => {
 	const { data, isLoading, isFetching } = useGetAllSnippets();
+	const {} = useGetFavSnippet();
+	const {} = useGetBinSnippets();
 
 	if (isLoading || isFetching) {
 		return <div className="text-red text-4xl">Loading...</div>;

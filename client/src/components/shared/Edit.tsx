@@ -2,11 +2,7 @@ import { Snippet } from "@/types"; // Adjust the import according to your file s
 import Snippetform from "./Snippetform";
 
 const Edit = ({ snippet }: { snippet: Snippet }) => {
-	return (
-		<div>
-			<Snippetform snippet={snippet} type="update" />
-		</div>
-	);
+	return <Snippetform snippet={snippet} type="update" />;
 };
 
 export default Edit;

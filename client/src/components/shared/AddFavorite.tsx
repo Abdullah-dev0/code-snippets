@@ -17,27 +17,34 @@ const AddFavorite = ({ snippetId }: AddFavoriteProps) => {
 
 	const mutation = useMutation({
 		mutationFn: async ({ snippetId }: AddFavoriteProps) => {
-			setHeartColor(true);
 			const response = await axios.post("/api/addfavorite", { snippetId });
-			return response.data;
+			return { response };
 		},
-		onSuccess: (response) => {
+		onMutate: () => {
+			setHeartColor(true);
+		},
+		onSuccess: ({ response }) => {
 			if (response.status === 200) {
 				toast.success(response.data.message);
+				console.log(response);
 			}
 			queryClient.invalidateQueries({
 				queryKey: ["getFavoritesSnippets"],
 			});
 		},
-		onError: ({ message }) => {
+		onError: (error) => {
 			setHeartColor(false);
-			toast.error(message);
+			if (axios.isAxiosError(error)) {
+				if (error.response) {
+					toast.error(error.response.data.error);
+				}
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
 		},
 	});
 
 	const isFav: Boolean = data?.map((snippet: any) => snippet.id).includes(snippetId);
-
-	console.log(isFav);
 
 	return (
 		<Heart

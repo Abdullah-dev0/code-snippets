@@ -62,6 +62,7 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 			toast.success(type === "update" ? "Snippet updated successfully" : "Snippet added successfully");
 			form.reset();
 			setIsOpen(false);
+
 			queryClient.invalidateQueries({
 				queryKey: ["GetAllSnippets"],
 			});

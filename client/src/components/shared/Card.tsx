@@ -27,9 +27,9 @@ export const Card = ({ snippet, type }: CardProps) => {
 // Header Component
 const Header = ({ snippet, type }: CardProps) => {
 	return (
-		<header className="flex flex-col gap-3">
+		<header className="flex flex-col gap-1">
 			<div className="flex justify-between">
-				<h1 className="text-md font-bold">{snippet.title}</h1>
+				<h1 className="text-xl font-medium text-gray-300">{snippet.title}</h1>
 				{type === "dashboard" ? (
 					<div className="flex gap-2 items-center">
 						<AddFavorite snippetId={snippet.id} />
@@ -39,8 +39,8 @@ const Header = ({ snippet, type }: CardProps) => {
 					<DeleteOrRestoreSnippet type="restore" id={snippet.id} />
 				)}
 			</div>
-			<p>{snippet.createdAt.toString().split("T")[0]}</p>
-			<p>{snippet.description}</p>
+			<p className="text-base font-medium text-gray-200">{snippet.createdAt.toString().split("T")[0]}</p>
+			<p className="text-lg font-medium text-gray-200">{snippet.description}</p>
 		</header>
 	);
 };

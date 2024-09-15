@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 export const useGetFavSnippet = () => {
-	const { data, isFetching, isLoading } = useQuery({
+	const { data, isFetching, isLoading, isRefetching } = useQuery<any>({
 		queryKey: ["getFavoritesSnippets"],
 		queryFn: async () => {
 			try {
@@ -20,7 +20,6 @@ export const useGetFavSnippet = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 15,
-		gcTime: 1000 * 60 * 60,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		retry: (failureCount, error: any) => {
@@ -32,5 +31,5 @@ export const useGetFavSnippet = () => {
 		retryDelay: 2000,
 	});
 
-	return { data, isFetching, isLoading };
+	return { data, isFetching, isLoading, isRefetching };
 };

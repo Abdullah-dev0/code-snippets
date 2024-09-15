@@ -39,7 +39,11 @@ const DeleteOrRestoreSnippet = ({ id, type }: DeleteOrRestoreSnippetProps) => {
 	return (
 		<AlertDialog open={open} onOpenChange={setOpen}>
 			<AlertDialogTrigger asChild>
-				{type === "bin" ? <Trash2 className="cursor-pointer" /> : <ArchiveRestore className="cursor-pointer" />}
+				{type === "bin" ? (
+					<Trash2 className="cursor-pointer text-red-800  hover:animate-pulse" />
+				) : (
+					<ArchiveRestore className="cursor-pointer" />
+				)}
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
