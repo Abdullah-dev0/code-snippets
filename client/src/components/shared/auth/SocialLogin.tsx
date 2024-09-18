@@ -9,13 +9,13 @@ const SocialLogin = ({ disabled }: SocialLoginProps) => {
 		option === "Github" ? (window.location.href = "/login/github") : (window.location.href = "/api/login/google");
 	};
 	return (
-		<div className="flex justify-evenly w-full max-sm:flex-col max-sm:gap-3">
-			<Button disabled={disabled} onClick={() => onSubmit("Google")}>
-				<FaGoogle size={24} />
+		<div className="flex justify-between w-full max-sm:flex-col max-sm:gap-3">
+			<Button disabled={disabled} variant={"outline"} onClick={() => onSubmit("Google")}>
+				<FaGoogle size={20} />
 				<span className="px-2">Google</span>
 			</Button>
-			<Button disabled={disabled} onClick={() => onSubmit("Github")}>
-				<FaGithub size={24} />
+			<Button disabled={disabled} variant={"outline"} onClick={() => onSubmit("Github")}>
+				<FaGithub size={20} />
 				<span className="px-2">Github</span>
 			</Button>
 		</div>
