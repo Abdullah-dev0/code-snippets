@@ -27,7 +27,7 @@ cleanExpiredSessionJob();
 cleanExpiredTokensJob();
 
 const corsOptions = {
-	origin: "http://localhost:5173", // Replace with your production domain
+	origin: "https://codenest.techonline.live/", // Replace with your production domain
 	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
 	allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
 	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
