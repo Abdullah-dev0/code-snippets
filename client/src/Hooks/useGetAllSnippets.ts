@@ -1,15 +1,16 @@
 import { Snippet } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 
-export const useGetAllSnippets = () => {
-	const { isLoading, isError, data, isFetching, status } = useQuery<Snippet[]>({
-		queryKey: ["GetAllSnippets"],
-
+export const useGetAllSnippets = (searchTerm: string) => {
+	console.log(searchTerm);
+	const { isLoading, data, isFetching } = useQuery<Snippet[]>({
+		queryKey: ["GetAllSnippets", searchTerm],
+		placeholderData: keepPreviousData,
 		queryFn: async () => {
 			try {
-				const response = await axios.get(`/api/getsnippets?deleted=${false}`);
+				const response = await axios.get(`/api/getsnippets?deleted=${false}&search=${searchTerm}`);
 				return response.data;
 			} catch (error: any) {
 				if (axios.isAxiosError(error)) {
@@ -22,7 +23,6 @@ export const useGetAllSnippets = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 15,
-		gcTime: 1000 * 60 * 60,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		retry: (failureCount, error: any) => {
@@ -34,12 +34,13 @@ export const useGetAllSnippets = () => {
 		retryDelay: 2000,
 	});
 
-	return { isLoading, isError, data, isFetching, status };
+	return { isLoading, data, isFetching };
 };
 
 export const useGetBinSnippets = () => {
 	const { isLoading, isError, data, isFetching } = useQuery<Snippet[]>({
 		queryKey: ["binSnippets"],
+
 		queryFn: async () => {
 			try {
 				const response = await axios.get(`/api/getsnippets?deleted=${true}`);
@@ -58,6 +59,7 @@ export const useGetBinSnippets = () => {
 		staleTime: 1000 * 60 * 10,
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
+
 		retry: (failureCount, error: any) => {
 			if (error?.response?.status === 401) {
 				return false;

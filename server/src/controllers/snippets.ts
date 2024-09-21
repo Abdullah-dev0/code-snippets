@@ -125,15 +125,18 @@ export const addToFavoritesOrRemove = async (req: Request, res: Response) => {
 
 export const getAllSnippets = async (req: Request, res: Response) => {
 	const { user } = res.locals;
-	const { deleted } = req.query;
+	const { deleted, search } = req.query;
 
 	const action = deleted === "true" ? true : false;
+
+	console.log(search);
 
 	try {
 		const snippets = await prisma.snippet.findMany({
 			where: {
 				userId: user?.id,
 				deleted: action,
+				OR: search ? [{ title: { contains: search as string, mode: "insensitive" } }] : undefined,
 			},
 			orderBy: {
 				createdAt: "desc",

@@ -55,7 +55,7 @@ export function SignupForm() {
 		<Card>
 			<CardHeader>
 				<CardTitle className="text-3xl font-bold text-center">Welcome</CardTitle>
-				<CardDescription className="text-center text-lg">Sign up to your account</CardDescription>
+				<CardDescription className="text-center text-lg">Sign up</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-5">
 				<Form {...form}>

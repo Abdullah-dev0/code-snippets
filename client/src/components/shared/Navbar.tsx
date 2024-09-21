@@ -20,9 +20,6 @@ const Navbar = () => {
 					<h1>{user?.email}</h1>
 				</div>
 			</div>
-			<div className="w-56">
-				<input type="text" className="w-full" />
-			</div>
 			<ModeToggle />
 		</div>
 	);

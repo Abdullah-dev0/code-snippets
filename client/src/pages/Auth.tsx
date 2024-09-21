@@ -1,31 +1,30 @@
 import { SigninForm } from "@/components/shared/auth/SigninForm";
 import { SignupForm } from "@/components/shared/auth/SignupForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { motion } from "framer-motion";
 
-const Auth = () => {
+function Auth() {
 	return (
-		<div className="max-w-lg mx-auto p-4">
-			<Tabs defaultValue="sign-up" className="w-full">
-				<TabsList className="grid w-full grid-cols-2">
-					<TabsTrigger value="sign-up" className="text-lg font-semibold">
-						Sign Up
-					</TabsTrigger>
-					<TabsTrigger value="sign-in" className="text-lg font-semibold">
-						Sign In
-					</TabsTrigger>
-				</TabsList>
-				<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-					<TabsContent value="sign-up" className="min-h-screen">
-						<SignupForm />
-					</TabsContent>
-					<TabsContent value="sign-in">
-						<SigninForm />
-					</TabsContent>
-				</motion.div>
-			</Tabs>
-		</div>
+		<Tabs defaultValue="sign-up" className="max-w-lg mx-auto grid place-content-center min-h-screen py-12">
+			<TabsList className="grid w-full grid-cols-2 gap-5">
+				<TabsTrigger
+					className="text-lg  text-black transition-colors duration-300 ease-in-out hover:bg-gray-300 data-[state=active]:bg-gray-900 data-[state=active]:text-white"
+					value="sign-up">
+					Sign up
+				</TabsTrigger>
+				<TabsTrigger
+					className="text-lg text-black transition-colors duration-300 ease-in-out hover:bg-gray-300 data-[state=active]:bg-gray-900 data-[state=active]:text-white rounded-r-md"
+					value="sign-in">
+					Sign in
+				</TabsTrigger>
+			</TabsList>
+			<TabsContent value="sign-up">
+				<SignupForm />
+			</TabsContent>
+			<TabsContent value="sign-in">
+				<SigninForm />
+			</TabsContent>
+		</Tabs>
 	);
-};
+}
 
 export default Auth;
