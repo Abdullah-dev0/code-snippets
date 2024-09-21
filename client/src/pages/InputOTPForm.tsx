@@ -75,6 +75,8 @@ export function InputOTPForm() {
 			} else {
 				toast.error("An unexpected error occurred. Please try again.");
 			}
+
+			toast.error("An unexpected error occurred. Please try again.");
 		} finally {
 			// Set loading state to false
 			setLoading(false);
@@ -114,7 +116,7 @@ export function InputOTPForm() {
 							{isRunning ? (
 								`Code Expires in  ${seconds}s`
 							) : (
-								<Button onClick={(e) => handleSubmit(e)} disabled={loading}>
+								<Button onClick={(e) => handleSubmit(e)} variant={"outline"} disabled={loading}>
 									{loading ? "Sending..." : "Resend Code"}
 								</Button>
 							)}

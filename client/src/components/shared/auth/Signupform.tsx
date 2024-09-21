@@ -39,6 +39,7 @@ export function SignupForm() {
 			if (axios.isAxiosError(error)) {
 				if (error.response) {
 					toast.error(error.response.data.error);
+					return;
 				} else {
 					toast.error("An unexpected error occurred. Please try again.");
 				}

@@ -4,6 +4,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useCurrentUser } from "@/Hooks/useCurrentUser";
+import { Navigate, Outlet } from "react-router-dom";
 
 const Sheet = SheetPrimitive.Root;
 
@@ -104,4 +106,22 @@ export {
 	SheetFooter,
 	SheetTitle,
 	SheetDescription,
+};
+export const ProtectedRoutes = () => {
+	const { user, isLoading, isFetching } = useCurrentUser();
+
+	// Show loading state when fetching the user data
+	if (isLoading || isFetching) {
+		return (
+			<div className="text-center grid place-content-center">
+				<Loader2 className="animate-spin" />
+			</div>
+		);
+	}
+
+	if (user && user.emailVerified) {
+		return <Navigate to="/dashboard" />;
+	}
+
+	return <Outlet />;
 };
