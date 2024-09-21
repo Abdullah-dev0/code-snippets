@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/Hooks/useCurrentUser";
+import { cn } from "@/lib/utils";
 import { Navigate, Outlet } from "react-router-dom";
 
 const Sheet = SheetPrimitive.Root;
@@ -96,16 +96,8 @@ const SheetDescription = React.forwardRef<
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
 export {
-	Sheet,
-	SheetPortal,
-	SheetOverlay,
-	SheetTrigger,
-	SheetClose,
-	SheetContent,
-	SheetHeader,
-	SheetFooter,
-	SheetTitle,
-	SheetDescription,
+	Sheet, SheetClose,
+	SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetOverlay, SheetPortal, SheetTitle, SheetTrigger
 };
 export const ProtectedRoutes = () => {
 	const { user, isLoading, isFetching } = useCurrentUser();
