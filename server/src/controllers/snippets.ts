@@ -1,11 +1,19 @@
 import { Snippet, User } from "@prisma/client";
 import { prisma } from "../config/prismaClient.js";
 import { Request, Response } from "express";
+import { SnippetSchema } from "../utils/dataValidation.js";
 
 export const addSnippet = async (req: Request, res: Response) => {
 	const { title, description, code, language } = req.body;
 
 	const user = res.locals.user as User;
+
+	const snippet = SnippetSchema.safeParse({ title, description, code, language });
+
+	if (!snippet.success) {
+		return res.status(400).json({ error: snippet.error }).end();
+	}
+
 	try {
 		const snippet: Snippet = await prisma.snippet.create({
 			data: {
@@ -174,6 +182,12 @@ export const deleteSnippetsById = async (req: Request, res: Response) => {
 
 export const updateSnippetById = async (req: Request, res: Response) => {
 	const { id, title, description, code, language } = req.body;
+
+	const snippet = SnippetSchema.safeParse({ title, description, code, language });
+
+	if (!snippet.success) {
+		return res.status(400).json({ error: snippet.error }).end();
+	}
 
 	try {
 		const snippet = await prisma.snippet.update({

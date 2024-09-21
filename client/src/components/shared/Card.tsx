@@ -26,21 +26,32 @@ export const Card = ({ snippet, type }: CardProps) => {
 
 // Header Component
 const Header = ({ snippet, type }: CardProps) => {
+	console.log(snippet.createdAt);
+
 	return (
-		<header className="flex flex-col gap-1">
-			<div className="flex justify-between">
-				<h1 className="text-xl font-medium text-gray-300">{snippet.title}</h1>
-				{type === "dashboard" ? (
-					<div className="flex gap-2 items-center">
-						<AddFavorite snippetId={snippet.id} />
-						<Edit snippet={snippet} />
-					</div>
-				) : (
-					<DeleteOrRestoreSnippet type="restore" id={snippet.id} />
-				)}
+		<header className="flex flex-col gap-6">
+			<div>
+				<div className="flex justify-between">
+					<h1 className="text-xl font-semibold">{snippet.title}</h1>
+					{type === "dashboard" ? (
+						<div className="flex gap-2 items-center">
+							<AddFavorite snippetId={snippet.id} />
+							<Edit snippet={snippet} />
+						</div>
+					) : (
+						<DeleteOrRestoreSnippet type="restore" id={snippet.id} />
+					)}
+				</div>
+				<p className="text-sm font-medium ">
+					{new Date(snippet.createdAt).toLocaleString("en-US", {
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+						timeZone: "UTC",
+					})}
+				</p>
 			</div>
-			<p className="text-base font-medium text-gray-200">{snippet.createdAt.toString().split("T")[0]}</p>
-			<p className="text-lg font-medium text-gray-200">{snippet.description}</p>
+			<p className="text-md font-medium ">{snippet.description}</p>
 		</header>
 	);
 };
@@ -97,7 +108,7 @@ const CodeBlock = ({ snippet }: CardProps) => {
 const Footer = ({ snippet, type }: CardProps) => {
 	return (
 		<footer className="flex justify-between">
-			<p>{snippet.language}</p>
+			<p className="text-sm dark:text-white text-gray-900 capitalize font-bold bg-primary/80 p-2 rounded-md">{snippet.language}</p>
 			{type === "dashboard" && <DeleteOrRestoreSnippet id={snippet.id} type="bin" />}
 		</footer>
 	);
