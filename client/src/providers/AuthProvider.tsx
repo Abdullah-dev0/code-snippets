@@ -6,8 +6,6 @@ import { Navigate, Outlet } from "react-router-dom";
 const AuthProvider = () => {
 	const { user, isLoading, isError, isFetching } = useCurrentUser();
 
-
-
 	if (isLoading || isFetching) {
 		return (
 			<div className="text-center grid place-content-center h-screen">

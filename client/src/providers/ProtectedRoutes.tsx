@@ -6,6 +6,8 @@ const ProtectedRoutes = () => {
 	const { user, isLoading, isFetching } = useCurrentUser();
 
 	// Show loading state when fetching the user data
+
+	console.log("user in Protected route", user);
 	if (isLoading || isFetching) {
 		return (
 			<div className="text-center grid place-content-center h-screen">

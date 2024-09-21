@@ -22,9 +22,7 @@ export const useCurrentUser = () => {
 			}
 		},
 		staleTime: 1000 * 60 * 15,
-		refetchOnMount: false,
 		refetchOnWindowFocus: false,
-		retryOnMount: false,
 		retry: false,
 	});
 

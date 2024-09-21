@@ -63,7 +63,9 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 			form.reset();
 			setIsOpen(false);
 
-			queryClient.invalidateQueries({
+			queryClient.cancelQueries({ queryKey: ["GetAllSnippets"] });
+
+			queryClient.refetchQueries({
 				queryKey: ["GetAllSnippets"],
 			});
 		},
