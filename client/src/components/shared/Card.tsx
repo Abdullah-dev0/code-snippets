@@ -3,7 +3,6 @@ import copy from "copy-to-clipboard";
 import { Copy, CopyCheck } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { a11yDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AddFavorite from "./AddFavorite";
@@ -59,12 +58,6 @@ const Header = ({ snippet, type }: CardProps) => {
 // CodeBlock Component
 const CodeBlock = ({ snippet }: CardProps) => {
 	const [copySuccess, setCopySuccess] = useState(false);
-	let code;
-	if (snippet.code.length < 280) {
-		code = snippet.code;
-	} else {
-		code = snippet.code.substring(0, 370) + "  ...";
-	}
 
 	const handleCopy = () => {
 		copy(snippet.code);
@@ -76,19 +69,25 @@ const CodeBlock = ({ snippet }: CardProps) => {
 		if (copySuccess) {
 			setTimeout(() => {
 				setCopySuccess(false);
-			}, 5000);
+			}, 4000);
 		}
 	}, [copySuccess]);
 
 	return (
-		<div className="rounded-md text-sm flex-1 relative">
+		<div className="rounded-md text-sm flex-1 relative ">
 			<SyntaxHighlighter
 				showLineNumbers
-				wrapLines
-				customStyle={{ padding: "16px", maxHeight: "350px" }}
+				className="custom-scrollbar"
+				wrapLines={false}
+				customStyle={{
+					padding: "16px",
+					maxHeight: "250px",
+					overflowX: "auto", // Enable horizontal scrolling
+					whiteSpace: "nowrap", // Prevent wrapping of code lines
+				}}
 				language="javascript"
 				style={a11yDark}>
-				{code}
+				{snippet.code}
 			</SyntaxHighlighter>
 
 			{copySuccess ? (
@@ -108,7 +107,9 @@ const CodeBlock = ({ snippet }: CardProps) => {
 const Footer = ({ snippet, type }: CardProps) => {
 	return (
 		<footer className="flex justify-between">
-			<p className="text-sm dark:text-white text-gray-900 capitalize font-bold bg-primary/80 p-2 rounded-md">{snippet.language}</p>
+			<p className="text-sm dark:text-white text-gray-900 capitalize font-semibold bg-primary/80 p-2 rounded-md">
+				{snippet.language}
+			</p>
 			{type === "dashboard" && <DeleteOrRestoreSnippet id={snippet.id} type="bin" />}
 		</footer>
 	);
