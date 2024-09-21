@@ -1,9 +1,10 @@
+import { debounce } from "@/lib/utils";
 import { Input } from "../ui/input";
 
 const SearchSnippet = ({ setSearchTerm }: { setSearchTerm: (value: string) => void }) => {
-	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSearchChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
-	};
+	}, 600);
 
 	return (
 		<div>

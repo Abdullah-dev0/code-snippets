@@ -6,7 +6,7 @@ const Sidebar = () => {
 	return (
 		<aside className="min-w-60  fixed left-0 h-screen shadow-lg dark:shadow-slate-900 hidden lg:block">
 			<div className="flex justify-center items-center gap-3 p-5 mt-5">
-				<img src="/src/public/logo.png" width={40} height={40} alt="SnippetNest Logo" />
+				<img src="/logo.png" width={40} height={40} alt="SnippetNest Logo" />
 
 				<h1 className="font-bold text-xl">
 					<span className="text-purple-900">Snippet</span> Nest

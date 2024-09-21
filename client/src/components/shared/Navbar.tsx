@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/Hooks/useCurrentUser";
 import { ModeToggle } from "./mode-toggle";
+import Snippetform from "./Snippetform";
 
 const Navbar = () => {
 	const { user } = useCurrentUser();
@@ -20,7 +21,10 @@ const Navbar = () => {
 					<h1>{user?.email}</h1>
 				</div>
 			</div>
-			<ModeToggle />
+			<div className="flex  gap-5 items-center">
+				<Snippetform type="create" />
+				<ModeToggle />
+			</div>
 		</div>
 	);
 };

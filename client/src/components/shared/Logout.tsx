@@ -11,7 +11,6 @@ const Logout = () => {
 
 	const [loading, setLoading] = useState(false);
 
-
 	const handleLogout = async () => {
 		setLoading(true);
 		try {
@@ -39,7 +38,7 @@ const Logout = () => {
 			onClick={handleLogout}
 			disabled={loading}
 			className="flex gap-4 hover:bg-purple-700 w-full justify-start p-6 text-xl items-center">
-			<img src="/src/public/logout.svg" className="h-6 w-6 dark:invert" alt="logout" />
+			<img src="/logout.svg" className="h-6 w-6 dark:invert" alt="logout" />
 			{loading ? "Logging out..." : "Logout"}
 		</Button>
 	);

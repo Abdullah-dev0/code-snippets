@@ -83,7 +83,7 @@ const Snippetform = ({ snippet, type }: SnippetformProps) => {
 							<Edit2 size={22} />
 						</>
 					) : (
-						"Create"
+						"Create Snippet"
 					)}
 				</Button>
 			</SheetTrigger>
