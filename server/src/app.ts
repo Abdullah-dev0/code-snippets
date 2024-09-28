@@ -1,6 +1,6 @@
 //This file is the entry point for the server. It sets up the express app, middleware, and routes.
 import cookieParser from "cookie-parser";
-import core from "cors";
+import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 import { authRouter } from "./routes/auth/auth.route.js";
@@ -13,6 +13,15 @@ import { snippetRouter } from "./routes/snippets.route.js";
 
 export const app = express();
 
+const corsOptions = {
+	origin: ["https://codenest.techonline.live", "http://localhost:5173"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	credentials: true,
+	preflightContinue: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
@@ -24,16 +33,8 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 cleanExpiredSessionJob();
+
 cleanExpiredTokensJob();
-
-const corsOptions = {
-	origin: "https://codenest.techonline.live/", // Replace with your production domain
-	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-	allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-};
-
-app.use(core(corsOptions));
 
 app.get("/", (req, res) => {
 	res.send("Hello, world!");
