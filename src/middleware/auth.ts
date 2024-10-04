@@ -12,7 +12,6 @@ export function originVerificationMiddleware(req: Request, res: Response, next: 
 	const originHeader = req.headers.origin ?? null;
 	const hostHeader = req.headers.host ?? null;
 
-	
 	if (!originHeader || !hostHeader || !verifyRequestOrigin(originHeader, [hostHeader])) {
 		return res.status(403).end();
 	}
@@ -33,11 +32,11 @@ export async function sessionManagementMiddleware(req: Request, res: Response, n
 	const { session, user } = await lucia.validateSession(sessionId);
 
 	if (session && session.fresh) {
-		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
+		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).end();
 	}
 
 	if (!session) {
-		res.appendHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize());
+		res.appendHeader("Set-Cookie", lucia.createBlankSessionCookie().serialize()).end();
 	}
 
 	res.locals.user = user;

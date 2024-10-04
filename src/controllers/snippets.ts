@@ -137,8 +137,6 @@ export const getAllSnippets = async (req: Request, res: Response) => {
 
 	const action = deleted === "true" ? true : false;
 
-	console.log(search);
-
 	try {
 		const snippets = await prisma.snippet.findMany({
 			where: {
@@ -150,6 +148,7 @@ export const getAllSnippets = async (req: Request, res: Response) => {
 				createdAt: "desc",
 			},
 		});
+
 
 		return res.status(200).json(snippets).end();
 	} catch (error) {

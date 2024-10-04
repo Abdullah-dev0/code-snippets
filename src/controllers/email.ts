@@ -18,6 +18,7 @@ export const emailVerification = async (req: Request, res: Response) => {
 	try {
 		// Extract and validate the verification code from the request body
 		const code: string = req.body.pin;
+
 		if (!code) {
 			return res.status(400).json({ error: "Code is required" });
 		}
@@ -36,8 +37,6 @@ export const emailVerification = async (req: Request, res: Response) => {
 			return res.status(400).json({ error: "The verification code you entered is incorrect" });
 		}
 
-		// Update user's email verification status
-		console.log("updating email verification status");
 		try {
 			await prisma.user.update({
 				where: {
@@ -53,6 +52,7 @@ export const emailVerification = async (req: Request, res: Response) => {
 
 		// Create a new session and set the session cookie
 		const session = await lucia.createSession(user?.user_id!, {});
+
 		res.setHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
 
 		// Respond with success
@@ -68,7 +68,7 @@ export const resendVerification = async (req: Request, res: Response) => {
 	const { user } = res.locals;
 
 	if (!res.locals.user) {
-		return res.status(404).json({ error: "Please Login" });
+		return res.status(404).json({ error: "You must be logged in" });
 	}
 
 	if (res.locals.user?.emailVerified) {

@@ -14,10 +14,10 @@ import { snippetRouter } from "./routes/snippets.route.js";
 export const app = express();
 
 const corsOptions = {
-	origin: ["https://codenest.techonline.live", "http://localhost:5173"],
-	allowedHeaders: ["Content-Type", "Authorization"],
-	credentials: true,
-	preflightContinue: true,
+	origin: ["https://codenest.techonline.live", "http://localhost:5173"], // Replace with your production domain
+	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+	allowedHeaders: ["Content-Type", "Authorization", "Set-Cookie"], // Allowed headers
+	credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
 app.use(cors(corsOptions));

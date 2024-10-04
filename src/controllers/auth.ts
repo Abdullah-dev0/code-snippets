@@ -1,5 +1,4 @@
 // All the funcitons related to authentication are here login, signup, logout, github login, github callback, google login, google callback
-
 import { hash, verify } from "@node-rs/argon2";
 import { generateCodeVerifier, generateState, OAuth2RequestError } from "arctic";
 import { Request, Response } from "express";
@@ -11,6 +10,9 @@ import { LoginData, SignupData } from "../utils/dataValidation.js";
 import { User } from "@prisma/client";
 import { sendVerificationCode } from "../utils/email/sendVerificationCode.js";
 import { generateEmailVerificationCode } from "../utils/email/generateVerificationCode.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const signUp = async (req: Request, res: Response) => {
 	if (res.locals.session) {
@@ -76,10 +78,7 @@ export const signUp = async (req: Request, res: Response) => {
 
 		if (user) {
 			const session = await lucia.createSession(user.id, {});
-			return res
-				.status(201)
-				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
-				.redirect("/dashboard");
+			return res.status(200).appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).end();
 		}
 
 		return res.status(400).json({ error: "Failed to create user" });
@@ -134,16 +133,14 @@ export const login = async (req: Request, res: Response) => {
 
 export const githubLogin = async (req: Request, res: Response) => {
 	if (res.locals.session) {
-		return res.status(200).json({ error: "You are login" }).end();
+		return res.status(400).json({ error: "You are already login" }).end();
 	}
 
 	const state = generateState();
 	const url = await github.createAuthorizationURL(state, {
 		scopes: ["user:email"],
 	});
-
-	console.log(url);
-
+	console.log(url.toString());
 	res
 		.status(302)
 		.appendHeader(
@@ -163,6 +160,8 @@ export const githubCallback = async (req: Request, res: Response) => {
 	const code = req.query.code?.toString() ?? null;
 	const state = req.query.state?.toString() ?? null;
 	const storedState = parseCookies(req.headers.cookie ?? "").get("github_oauth_state") ?? null;
+
+	console.log("callback route is hit ", code, state, storedState);
 
 	if (!code || !state || !storedState || state !== storedState) {
 		return res
@@ -193,9 +192,9 @@ export const githubCallback = async (req: Request, res: Response) => {
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 			return res
-				.status(201)
+				.status(302)
 				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
-				.redirect("/dashboard");
+				.redirect(`${process.env.BASE_URL}/dashboard`);
 		}
 
 		const registeredEmail = await prisma.user.findFirst({
@@ -206,7 +205,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 
 		if (registeredEmail) {
 			const errorMessage = encodeURIComponent("This email is already registered.");
-			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
+			return res.status(302).redirect(`${process.env.BASE_URL}/auth?error=${errorMessage}`);
 		}
 
 		const user = await prisma.user.create({
@@ -225,18 +224,19 @@ export const githubCallback = async (req: Request, res: Response) => {
 		});
 
 		const session = await lucia.createSession(user.id, {});
+
 		return res
-			.status(201)
+			.status(302)
 			.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
-			.redirect("/dashboard");
+			.redirect(`${process.env.BASE_URL}/dashboard`);
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-			// invalid code
 			res.status(400).end();
 			return;
 		}
 		console.log(e);
 		res.status(500).end();
+		console.log(e);
 	}
 };
 
@@ -284,6 +284,8 @@ export const googleCallback = async (req: Request, res: Response) => {
 	const storedState = parseCookies(req.headers.cookie ?? "").get("google_oauth_state") ?? null;
 	const codeVerifier = parseCookies(req.headers.cookie ?? "").get("google_code_verifier") ?? null;
 
+	console.log("callback route is hit ");
+
 	if (!code || !state || !storedState || state !== storedState || !codeVerifier) {
 		return res
 			.status(400)
@@ -313,9 +315,10 @@ export const googleCallback = async (req: Request, res: Response) => {
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.userId, {});
 
-			res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize());
-
-			return res.status(309).redirect("/dashboard");
+			res
+				.status(302)
+				.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
+				.redirect(`${process.env.BASE_URL}/dashboard`);
 		}
 
 		const registeredEmail = await prisma.user.findFirst({
@@ -326,7 +329,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 		if (registeredEmail) {
 			const errorMessage = encodeURIComponent("This email is already registered.");
-			return res.redirect(`/auth/sign-up?error=${errorMessage}`);
+			return res.redirect(`${process.env.BASE_URL}/auth?error=${errorMessage}`);
 		}
 
 		const user = await prisma.user.create({
@@ -345,7 +348,10 @@ export const googleCallback = async (req: Request, res: Response) => {
 		});
 
 		const session = await lucia.createSession(user.id, {});
-		res.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize()).redirect("/dashboard");
+		res
+			.status(302)
+			.appendHeader("Set-Cookie", lucia.createSessionCookie(session.id).serialize())
+			.redirect(`${process.env.BASE_URL}/dashboard`);
 	} catch (e) {
 		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
 			// invalid code
